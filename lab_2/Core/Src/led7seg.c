@@ -10,7 +10,11 @@
 uint8_t led7seg_map_of_number[] = {0x40, 0x79, 0x24, 0x30, 0x19, 0x12, 0x02, 0x78, 0x00, 0x10};
 uint8_t led7seg_index[] = {0x8, 0x4, 0x2, 0x1};
 uint8_t led_7seg_index = 0;
-uint8_t led_7seg[4] = {0, 0, 0 , 0};
+uint8_t led_7seg[4] = {0, 0, 0, 0};
+
+const int MAX_LED = 4;
+int index_led = 0;
+int led_buffer[4] = {1, 2, 3, 4};
 
 void display7SEG (int num) {
 	HAL_GPIO_WritePin(LED7SEG_a_GPIO_Port, LED7SEG_a_Pin, !((~led7seg_map_of_number[num]) & (1 << 0)));
@@ -47,4 +51,31 @@ void led_7seg_display() {
 
 void led_7seg_toggle_dot() {
 	HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);
+}
+
+void update7SEG(int index){
+	switch (index){
+	case 0:
+		//Display the first 7SEG with led_buffer[0]
+		enable_seg(0);
+		display7SEG(led_buffer[0]);
+		break;
+	case 1:
+		//Display the second 7SEG with led_buffer[1]
+		enable_seg(1);
+		display7SEG(led_buffer[1]);
+		break;
+	case 2:
+		//Display the third 7SEG with led_buffer[2]
+		enable_seg(2);
+		display7SEG(led_buffer[2]);
+		break;
+	case 3:
+		//Display the forth 7SEG with led_buffer[3]
+		enable_seg(3);
+		display7SEG(led_buffer[3]);
+		break;
+	default:
+		break;
+	}
 }
