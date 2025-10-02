@@ -31,17 +31,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define RED_YELLOW	2
-#define GREEN_RED	4
-#define YELLOW_RED	7
-#define RED_GREEN	9
 
-#define RED			4
-#define YELLOW		2
-#define GREEN		1
-
-#define ON 		0
-#define OFF 	1
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -52,17 +42,14 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t led7seg_map_of_number[] = {0x40, 0x79, 0x24, 0x30, 0x19, 0x12, 0x02, 0x78, 0x00, 0x10};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 /* USER CODE BEGIN PFP */
-void light_set1 (uint8_t n);
-void light_set2 (uint8_t n);
-void display7SEG (int num);
-void display7SEG_ (int num);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -100,53 +87,68 @@ int main(void)
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
 	/* USER CODE BEGIN 2 */
-	HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, 1);
-	uint8_t counter = 9;
-	uint8_t count_down = 0;
-	uint8_t count_down_ = 0;
+	HAL_GPIO_WritePin(LED_0_GPIO_Port, LED_0_Pin, 1);
+	HAL_GPIO_WritePin(LED_1_GPIO_Port, LED_1_Pin, 1);
+	HAL_GPIO_WritePin(LED_2_GPIO_Port, LED_2_Pin, 1);
+	HAL_GPIO_WritePin(LED_3_GPIO_Port, LED_3_Pin, 1);
+	HAL_GPIO_WritePin(LED_4_GPIO_Port, LED_4_Pin, 1);
+	HAL_GPIO_WritePin(LED_5_GPIO_Port, LED_5_Pin, 1);
+	HAL_GPIO_WritePin(LED_6_GPIO_Port, LED_6_Pin, 1);
+	HAL_GPIO_WritePin(LED_7_GPIO_Port, LED_7_Pin, 1);
+	HAL_GPIO_WritePin(LED_8_GPIO_Port, LED_8_Pin, 1);
+	HAL_GPIO_WritePin(LED_9_GPIO_Port, LED_9_Pin, 1);
+	HAL_GPIO_WritePin(LED_10_GPIO_Port, LED_10_Pin, 1);
+	HAL_GPIO_WritePin(LED_11_GPIO_Port, LED_11_Pin, 1);
+
+	uint8_t count = 0;
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 	while (1)
 	{
-		HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
-		switch (counter) {
-		case RED_GREEN:
-			light_set1(RED);
-			light_set2(GREEN);
-
-			count_down = 5;
-			count_down_ = 3;
+		switch(count){
+		case 0:
+			HAL_GPIO_TogglePin(LED_0_GPIO_Port, LED_0_Pin);
 			break;
-		case RED_YELLOW:
-			light_set1(RED);
-			light_set2(YELLOW);
-
-			count_down_ = 2;
+		case 1:
+			HAL_GPIO_TogglePin(LED_1_GPIO_Port, LED_1_Pin);
 			break;
-		case GREEN_RED:
-			light_set1(GREEN);
-			light_set2(RED);
-
-			count_down = 3;
-			count_down_ = 5;
+		case 2:
+			HAL_GPIO_TogglePin(LED_2_GPIO_Port, LED_2_Pin);
 			break;
-		case YELLOW_RED:
-			light_set1(YELLOW);
-			light_set2(RED);
-
-			count_down = 2;
+		case 3:
+			HAL_GPIO_TogglePin(LED_3_GPIO_Port, LED_3_Pin);
+			break;
+		case 4:
+			HAL_GPIO_TogglePin(LED_4_GPIO_Port, LED_4_Pin);
+			break;
+		case 5:
+			HAL_GPIO_TogglePin(LED_5_GPIO_Port, LED_5_Pin);
+			break;
+		case 6:
+			HAL_GPIO_TogglePin(LED_6_GPIO_Port, LED_6_Pin);
+			break;
+		case 7:
+			HAL_GPIO_TogglePin(LED_7_GPIO_Port, LED_7_Pin);
+			break;
+		case 8:
+			HAL_GPIO_TogglePin(LED_8_GPIO_Port, LED_8_Pin);
+			break;
+		case 9:
+			HAL_GPIO_TogglePin(LED_9_GPIO_Port, LED_9_Pin);
+			break;
+		case 10:
+			HAL_GPIO_TogglePin(LED_10_GPIO_Port, LED_10_Pin);
+			break;
+		case 11:
+			HAL_GPIO_TogglePin(LED_11_GPIO_Port, LED_11_Pin);
 			break;
 		default:
 			break;
 		}
-		counter = (counter + 1) % 10;
-		display7SEG(count_down);
-		display7SEG_(count_down_);
-		--count_down;
-		--count_down_;
-		HAL_Delay(1000);
+		count = (count + 1) % 12;
+		HAL_Delay(250);
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
@@ -204,39 +206,22 @@ static void MX_GPIO_Init(void)
 
 	/* GPIO Ports Clock Enable */
 	__HAL_RCC_GPIOA_CLK_ENABLE();
-	__HAL_RCC_GPIOB_CLK_ENABLE();
 
 	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOA, LED_DEBUG_Pin|LED_YELLOW1_Pin|LED_GREEN1_Pin|LED_RED2_Pin
-			|LED_YELLOW2_Pin|LED_GREEN2_Pin|LED_RED1_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, LED_0_Pin|LED_1_Pin|LED_2_Pin|LED_3_Pin
+			|LED_4_Pin|LED_5_Pin|LED_6_Pin|LED_7_Pin
+			|LED_8_Pin|LED_9_Pin|LED_10_Pin|LED_11_Pin, GPIO_PIN_RESET);
 
-	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOB, LED7SEG_a_Pin|LED7SEG_b_Pin|LED7SEG_c_Pin|LED7SEG_d__Pin
-			|LED7SEG_e__Pin|LED7SEG_f__Pin|LED7SEG_g__Pin|LED7SEG_d_Pin
-			|LED7SEG_e_Pin|LED7SEG_f_Pin|LED7SEG_g_Pin|LED7SEG_a__Pin
-			|LED7SEG_b__Pin|LED7SEG_c__Pin, GPIO_PIN_RESET);
-
-	/*Configure GPIO pins : LED_DEBUG_Pin LED_YELLOW1_Pin LED_GREEN1_Pin LED_RED2_Pin
-                           LED_YELLOW2_Pin LED_GREEN2_Pin LED_RED1_Pin */
-	GPIO_InitStruct.Pin = LED_DEBUG_Pin|LED_YELLOW1_Pin|LED_GREEN1_Pin|LED_RED2_Pin
-			|LED_YELLOW2_Pin|LED_GREEN2_Pin|LED_RED1_Pin;
+	/*Configure GPIO pins : LED_0_Pin LED_1_Pin LED_2_Pin LED_3_Pin
+                           LED_4_Pin LED_5_Pin LED_6_Pin LED_7_Pin
+                           LED_8_Pin LED_9_Pin LED_10_Pin LED_11_Pin */
+	GPIO_InitStruct.Pin = LED_0_Pin|LED_1_Pin|LED_2_Pin|LED_3_Pin
+			|LED_4_Pin|LED_5_Pin|LED_6_Pin|LED_7_Pin
+			|LED_8_Pin|LED_9_Pin|LED_10_Pin|LED_11_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-	/*Configure GPIO pins : LED7SEG_a_Pin LED7SEG_b_Pin LED7SEG_c_Pin LED7SEG_d__Pin
-                           LED7SEG_e__Pin LED7SEG_f__Pin LED7SEG_g__Pin LED7SEG_d_Pin
-                           LED7SEG_e_Pin LED7SEG_f_Pin LED7SEG_g_Pin LED7SEG_a__Pin
-                           LED7SEG_b__Pin LED7SEG_c__Pin */
-	GPIO_InitStruct.Pin = LED7SEG_a_Pin|LED7SEG_b_Pin|LED7SEG_c_Pin|LED7SEG_d__Pin
-			|LED7SEG_e__Pin|LED7SEG_f__Pin|LED7SEG_g__Pin|LED7SEG_d_Pin
-			|LED7SEG_e_Pin|LED7SEG_f_Pin|LED7SEG_g_Pin|LED7SEG_a__Pin
-			|LED7SEG_b__Pin|LED7SEG_c__Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 	/* USER CODE BEGIN MX_GPIO_Init_2 */
 
@@ -244,37 +229,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void light_set1 (uint8_t n) {
-	HAL_GPIO_WritePin(LED_RED1_GPIO_Port, LED_RED1_Pin, !(n & (1<<2)));
-	HAL_GPIO_WritePin(LED_YELLOW1_GPIO_Port, LED_YELLOW1_Pin, !(n & (1<<1)));
-	HAL_GPIO_WritePin(LED_GREEN1_GPIO_Port, LED_GREEN1_Pin, !(n & (1<<0)));
-}
 
-void light_set2 (uint8_t n) {
-	HAL_GPIO_WritePin(LED_RED2_GPIO_Port, LED_RED2_Pin, !(n & (1<<2)));
-	HAL_GPIO_WritePin(LED_YELLOW2_GPIO_Port, LED_YELLOW2_Pin, !(n & (1<<1)));
-	HAL_GPIO_WritePin(LED_GREEN2_GPIO_Port, LED_GREEN2_Pin, !(n & (1<<0)));
-}
-
-void display7SEG (int num) {
-	HAL_GPIO_WritePin(LED7SEG_a_GPIO_Port, LED7SEG_a_Pin, !((~led7seg_map_of_number[num]) & (1 << 0)));
-	HAL_GPIO_WritePin(LED7SEG_b_GPIO_Port, LED7SEG_b_Pin, !((~led7seg_map_of_number[num]) & (1 << 1)));
-	HAL_GPIO_WritePin(LED7SEG_c_GPIO_Port, LED7SEG_c_Pin, !((~led7seg_map_of_number[num]) & (1 << 2)));
-	HAL_GPIO_WritePin(LED7SEG_d_GPIO_Port, LED7SEG_d_Pin, !((~led7seg_map_of_number[num]) & (1 << 3)));
-	HAL_GPIO_WritePin(LED7SEG_e_GPIO_Port, LED7SEG_e_Pin, !((~led7seg_map_of_number[num]) & (1 << 4)));
-	HAL_GPIO_WritePin(LED7SEG_f_GPIO_Port, LED7SEG_f_Pin, !((~led7seg_map_of_number[num]) & (1 << 5)));
-	HAL_GPIO_WritePin(LED7SEG_g_GPIO_Port, LED7SEG_g_Pin, !((~led7seg_map_of_number[num]) & (1 << 6)));
-}
-
-void display7SEG_ (int num) {
-	HAL_GPIO_WritePin(LED7SEG_a__GPIO_Port, LED7SEG_a__Pin, !((~led7seg_map_of_number[num]) & (1 << 0)));
-	HAL_GPIO_WritePin(LED7SEG_b__GPIO_Port, LED7SEG_b__Pin, !((~led7seg_map_of_number[num]) & (1 << 1)));
-	HAL_GPIO_WritePin(LED7SEG_c__GPIO_Port, LED7SEG_c__Pin, !((~led7seg_map_of_number[num]) & (1 << 2)));
-	HAL_GPIO_WritePin(LED7SEG_d__GPIO_Port, LED7SEG_d__Pin, !((~led7seg_map_of_number[num]) & (1 << 3)));
-	HAL_GPIO_WritePin(LED7SEG_e__GPIO_Port, LED7SEG_e__Pin, !((~led7seg_map_of_number[num]) & (1 << 4)));
-	HAL_GPIO_WritePin(LED7SEG_f__GPIO_Port, LED7SEG_f__Pin, !((~led7seg_map_of_number[num]) & (1 << 5)));
-	HAL_GPIO_WritePin(LED7SEG_g__GPIO_Port, LED7SEG_g__Pin, !((~led7seg_map_of_number[num]) & (1 << 6)));
-}
 /* USER CODE END 4 */
 
 /**
