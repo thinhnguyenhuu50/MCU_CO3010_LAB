@@ -32,12 +32,7 @@
 
 /* USER CODE END 1 */
 
-/** Configure pins as
-        * Analog
-        * Input
-        * Output
-        * EVENT_OUT
-        * EXTI
+/** Configure pins
 */
 void MX_GPIO_Init(void)
 {
@@ -49,26 +44,38 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, DOT_Pin|LED_RED_Pin|EN_0_Pin|EN_1_Pin
-                          |EN_2_Pin|EN_3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, ENM_0_Pin|ENM_1_Pin|DOT_Pin|LED_RED_Pin
+                          |EN_0_Pin|EN_1_Pin|EN_2_Pin|EN_3_Pin
+                          |ENM_2_Pin|ENM_3_Pin|ENM_4_Pin|ENM_5_Pin
+                          |ENM_6_Pin|ENM_7_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LED7SEG_a_Pin|LED7SEG_b_Pin|LED7SEG_c_Pin|LED7SEG_d_Pin
-                          |LED7SEG_e_Pin|LED7SEG_f_Pin|LED7SEG_g_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, LED7SEG_a_Pin|LED7SEG_b_Pin|LED7SEG_c_Pin|ROW_2_Pin
+                          |ROW_3_Pin|ROW_4_Pin|ROW_5_Pin|ROW_6_Pin
+                          |ROW_7_Pin|LED7SEG_d_Pin|LED7SEG_e_Pin|LED7SEG_f_Pin
+                          |LED7SEG_g_Pin|ROW_0_Pin|ROW_1_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : DOT_Pin LED_RED_Pin EN_0_Pin EN_1_Pin
-                           EN_2_Pin EN_3_Pin */
-  GPIO_InitStruct.Pin = DOT_Pin|LED_RED_Pin|EN_0_Pin|EN_1_Pin
-                          |EN_2_Pin|EN_3_Pin;
+  /*Configure GPIO pins : ENM_0_Pin ENM_1_Pin DOT_Pin LED_RED_Pin
+                           EN_0_Pin EN_1_Pin EN_2_Pin EN_3_Pin
+                           ENM_2_Pin ENM_3_Pin ENM_4_Pin ENM_5_Pin
+                           ENM_6_Pin ENM_7_Pin */
+  GPIO_InitStruct.Pin = ENM_0_Pin|ENM_1_Pin|DOT_Pin|LED_RED_Pin
+                          |EN_0_Pin|EN_1_Pin|EN_2_Pin|EN_3_Pin
+                          |ENM_2_Pin|ENM_3_Pin|ENM_4_Pin|ENM_5_Pin
+                          |ENM_6_Pin|ENM_7_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LED7SEG_a_Pin LED7SEG_b_Pin LED7SEG_c_Pin LED7SEG_d_Pin
-                           LED7SEG_e_Pin LED7SEG_f_Pin LED7SEG_g_Pin */
-  GPIO_InitStruct.Pin = LED7SEG_a_Pin|LED7SEG_b_Pin|LED7SEG_c_Pin|LED7SEG_d_Pin
-                          |LED7SEG_e_Pin|LED7SEG_f_Pin|LED7SEG_g_Pin;
+  /*Configure GPIO pins : LED7SEG_a_Pin LED7SEG_b_Pin LED7SEG_c_Pin ROW_2_Pin
+                           ROW_3_Pin ROW_4_Pin ROW_5_Pin ROW_6_Pin
+                           ROW_7_Pin LED7SEG_d_Pin LED7SEG_e_Pin LED7SEG_f_Pin
+                           LED7SEG_g_Pin ROW_0_Pin ROW_1_Pin */
+  GPIO_InitStruct.Pin = LED7SEG_a_Pin|LED7SEG_b_Pin|LED7SEG_c_Pin|ROW_2_Pin
+                          |ROW_3_Pin|ROW_4_Pin|ROW_5_Pin|ROW_6_Pin
+                          |ROW_7_Pin|LED7SEG_d_Pin|LED7SEG_e_Pin|LED7SEG_f_Pin
+                          |LED7SEG_g_Pin|ROW_0_Pin|ROW_1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "led7seg.h"
 #include "software_timer.h"
+#include "led_matrix.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -37,6 +38,7 @@
 #define TIMER_LED_DEBUG 	0
 #define TIMER_7SEG_DOT 		1
 #define TIMER_7SEG_LED 		2
+#define TIMER_LED_MATRIX	3
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -99,6 +101,7 @@ int main(void)
 	timer_set(TIMER_LED_DEBUG, 500);
 	timer_set(TIMER_7SEG_DOT, 1000);
 	timer_set(TIMER_7SEG_LED, 250);
+	timer_set(TIMER_LED_MATRIX, 250);
 	/**
 	 * Report 1: If this line is missed, the software timer will not work! :O
 	 */
@@ -141,12 +144,21 @@ int main(void)
 			if (index_led >= 4) {
 				index_led = 0;
 			}
+
 			timer_set(TIMER_7SEG_LED, 250);
 		}
 
 		if(timer_is_expired(TIMER_LED_DEBUG)){
 			HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
 			timer_set(TIMER_LED_DEBUG, 500);
+		}
+
+		if (timer_is_expired(TIMER_LED_MATRIX)) {
+			updateLEDMatrix(index_led_matrix++);
+			if (index_led_matrix == 8) {
+				index_led_matrix = 0;
+			}
+			timer_set(TIMER_LED_MATRIX, 250);
 		}
 		/* USER CODE END WHILE */
 
