@@ -62,6 +62,7 @@ static void MX_GPIO_Init(void);
 void light_set1 (uint8_t n);
 void light_set2 (uint8_t n);
 void display7SEG (int num);
+void display7SEG_ (int num);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -99,8 +100,10 @@ int main(void)
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
 	/* USER CODE BEGIN 2 */
-	uint8_t counter = 9; // To begin with red light
 	HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, 1);
+	uint8_t counter = 9;
+	uint8_t count_down = 0;
+	uint8_t count_down_ = 0;
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -112,24 +115,37 @@ int main(void)
 		case RED_GREEN:
 			light_set1(RED);
 			light_set2(GREEN);
+
+			count_down = 5;
+			count_down_ = 3;
 			break;
 		case RED_YELLOW:
 			light_set1(RED);
 			light_set2(YELLOW);
+
+			count_down_ = 2;
 			break;
 		case GREEN_RED:
 			light_set1(GREEN);
 			light_set2(RED);
+
+			count_down = 3;
+			count_down_ = 5;
 			break;
 		case YELLOW_RED:
 			light_set1(YELLOW);
 			light_set2(RED);
+
+			count_down = 2;
 			break;
 		default:
 			break;
 		}
 		counter = (counter + 1) % 10;
-		display7SEG(counter);
+		display7SEG(count_down);
+		display7SEG_(count_down_);
+		--count_down;
+		--count_down_;
 		HAL_Delay(1000);
 		/* USER CODE END WHILE */
 
@@ -195,8 +211,10 @@ static void MX_GPIO_Init(void)
 			|LED_YELLOW2_Pin|LED_GREEN2_Pin|LED_RED1_Pin, GPIO_PIN_RESET);
 
 	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOB, LED7SEG_a_Pin|LED7SEG_b_Pin|LED7SEG_c_Pin|LED7SEG_d_Pin
-			|LED7SEG_e_Pin|LED7SEG_f_Pin|LED7SEG_g_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, LED7SEG_a_Pin|LED7SEG_b_Pin|LED7SEG_c_Pin|LED7SEG_d__Pin
+			|LED7SEG_e__Pin|LED7SEG_f__Pin|LED7SEG_g__Pin|LED7SEG_d_Pin
+			|LED7SEG_e_Pin|LED7SEG_f_Pin|LED7SEG_g_Pin|LED7SEG_a__Pin
+			|LED7SEG_b__Pin|LED7SEG_c__Pin, GPIO_PIN_RESET);
 
 	/*Configure GPIO pins : LED_DEBUG_Pin LED_YELLOW1_Pin LED_GREEN1_Pin LED_RED2_Pin
                            LED_YELLOW2_Pin LED_GREEN2_Pin LED_RED1_Pin */
@@ -207,10 +225,14 @@ static void MX_GPIO_Init(void)
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-	/*Configure GPIO pins : LED7SEG_a_Pin LED7SEG_b_Pin LED7SEG_c_Pin LED7SEG_d_Pin
-                           LED7SEG_e_Pin LED7SEG_f_Pin LED7SEG_g_Pin */
-	GPIO_InitStruct.Pin = LED7SEG_a_Pin|LED7SEG_b_Pin|LED7SEG_c_Pin|LED7SEG_d_Pin
-			|LED7SEG_e_Pin|LED7SEG_f_Pin|LED7SEG_g_Pin;
+	/*Configure GPIO pins : LED7SEG_a_Pin LED7SEG_b_Pin LED7SEG_c_Pin LED7SEG_d__Pin
+                           LED7SEG_e__Pin LED7SEG_f__Pin LED7SEG_g__Pin LED7SEG_d_Pin
+                           LED7SEG_e_Pin LED7SEG_f_Pin LED7SEG_g_Pin LED7SEG_a__Pin
+                           LED7SEG_b__Pin LED7SEG_c__Pin */
+	GPIO_InitStruct.Pin = LED7SEG_a_Pin|LED7SEG_b_Pin|LED7SEG_c_Pin|LED7SEG_d__Pin
+			|LED7SEG_e__Pin|LED7SEG_f__Pin|LED7SEG_g__Pin|LED7SEG_d_Pin
+			|LED7SEG_e_Pin|LED7SEG_f_Pin|LED7SEG_g_Pin|LED7SEG_a__Pin
+			|LED7SEG_b__Pin|LED7SEG_c__Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -242,6 +264,16 @@ void display7SEG (int num) {
 	HAL_GPIO_WritePin(LED7SEG_e_GPIO_Port, LED7SEG_e_Pin, !((~led7seg_map_of_number[num]) & (1 << 4)));
 	HAL_GPIO_WritePin(LED7SEG_f_GPIO_Port, LED7SEG_f_Pin, !((~led7seg_map_of_number[num]) & (1 << 5)));
 	HAL_GPIO_WritePin(LED7SEG_g_GPIO_Port, LED7SEG_g_Pin, !((~led7seg_map_of_number[num]) & (1 << 6)));
+}
+
+void display7SEG_ (int num) {
+	HAL_GPIO_WritePin(LED7SEG_a__GPIO_Port, LED7SEG_a__Pin, !((~led7seg_map_of_number[num]) & (1 << 0)));
+	HAL_GPIO_WritePin(LED7SEG_b__GPIO_Port, LED7SEG_b__Pin, !((~led7seg_map_of_number[num]) & (1 << 1)));
+	HAL_GPIO_WritePin(LED7SEG_c__GPIO_Port, LED7SEG_c__Pin, !((~led7seg_map_of_number[num]) & (1 << 2)));
+	HAL_GPIO_WritePin(LED7SEG_d__GPIO_Port, LED7SEG_d__Pin, !((~led7seg_map_of_number[num]) & (1 << 3)));
+	HAL_GPIO_WritePin(LED7SEG_e__GPIO_Port, LED7SEG_e__Pin, !((~led7seg_map_of_number[num]) & (1 << 4)));
+	HAL_GPIO_WritePin(LED7SEG_f__GPIO_Port, LED7SEG_f__Pin, !((~led7seg_map_of_number[num]) & (1 << 5)));
+	HAL_GPIO_WritePin(LED7SEG_g__GPIO_Port, LED7SEG_g__Pin, !((~led7seg_map_of_number[num]) & (1 << 6)));
 }
 /* USER CODE END 4 */
 
