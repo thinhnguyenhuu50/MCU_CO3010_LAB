@@ -1,0 +1,46 @@
+# STM32CubeIDE project files
+.metadata/
+.recommenders/
+RemoteSystemsTempFiles/
+Servers/
+
+# Build directories
+Debug/
+Release/
+build/
+
+# Generated files
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+*.su
+*.d
+*.o
+*.log
+
+# STM32CubeIDE specific
+.settings/
+.launches/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*~
+*.tmp
+*.bak
+*.swp
+
+# Ignore everything inside proteus folders
+**/proteus/*
+
+# But keep all .pdsprj files inside proteus
+!**/proteus/*.pdsprj
