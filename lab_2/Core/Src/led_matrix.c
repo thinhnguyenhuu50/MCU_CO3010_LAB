@@ -76,3 +76,9 @@ void updateLEDMatrix(int index){
 		break;
 	}
 }
+
+void shift_left_matrix() {
+	for (int i = 0; i < MAX_LED_MATRIX; ++i) {
+		matrix_buffer[i] = (matrix_buffer[i] << 1) | (matrix_buffer[i] >> 7);
+	}
+}

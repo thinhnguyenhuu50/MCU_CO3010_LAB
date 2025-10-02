@@ -35,10 +35,11 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define TIMER_LED_DEBUG 	0
-#define TIMER_7SEG_DOT 		1
-#define TIMER_7SEG_LED 		2
-#define TIMER_LED_MATRIX	3
+#define TIMER_LED_DEBUG 		0
+#define TIMER_7SEG_DOT 			1
+#define TIMER_7SEG_LED 			2
+#define TIMER_LED_MATRIX		3
+#define TIMER_LED_MATRIX_SHIFT 	4
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -102,6 +103,7 @@ int main(void)
 	timer_set(TIMER_7SEG_DOT, 1000);
 	timer_set(TIMER_7SEG_LED, 250);
 	timer_set(TIMER_LED_MATRIX, 250);
+	timer_set(TIMER_LED_MATRIX_SHIFT, 2000);
 	/**
 	 * Report 1: If this line is missed, the software timer will not work! :O
 	 */
@@ -159,6 +161,11 @@ int main(void)
 				index_led_matrix = 0;
 			}
 			timer_set(TIMER_LED_MATRIX, 250);
+		}
+
+		if (timer_is_expired(TIMER_LED_MATRIX_SHIFT)) {
+			shift_left_matrix();
+			timer_set(TIMER_LED_MATRIX_SHIFT, 2000);
 		}
 		/* USER CODE END WHILE */
 
