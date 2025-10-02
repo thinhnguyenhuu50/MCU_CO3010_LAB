@@ -6,6 +6,7 @@
  */
 
 #include "software_timer.h"
+#include "tim.h"
 
 #define NUMBER_OF_TIMERS 10
 #define TIMER_CYCLE 10; // 10 ms period
@@ -40,4 +41,8 @@ int timer_is_expired(int index) {
 		return 1;
 	}
 	return 0;
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+	timer_run();
 }
