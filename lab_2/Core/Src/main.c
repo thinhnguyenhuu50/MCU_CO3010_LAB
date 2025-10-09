@@ -50,7 +50,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-int hour = 15, minute = 8, second = 50;
+int hour = 15, minute = 59, second = 58;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -103,7 +103,7 @@ int main(void)
 	timer_set(TIMER_7SEG_DOT, 1000);
 	timer_set(TIMER_7SEG_LED, 250);
 	timer_set(TIMER_LED_MATRIX, 250);
-	timer_set(TIMER_LED_MATRIX_SHIFT, 2000);
+	timer_set(TIMER_LED_MATRIX_SHIFT, 1000);
 	/**
 	 * Report 1: If this line is missed, the software timer will not work! :O
 	 */
@@ -160,12 +160,12 @@ int main(void)
 			if (index_led_matrix == 8) {
 				index_led_matrix = 0;
 			}
-			timer_set(TIMER_LED_MATRIX, 250);
+			timer_set(TIMER_LED_MATRIX, 10);
 		}
 
 		if (timer_is_expired(TIMER_LED_MATRIX_SHIFT)) {
 			shift_left_matrix();
-			timer_set(TIMER_LED_MATRIX_SHIFT, 2000);
+			timer_set(TIMER_LED_MATRIX_SHIFT, 1000);
 		}
 		/* USER CODE END WHILE */
 
