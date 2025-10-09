@@ -160,12 +160,12 @@ int main(void)
 			if (index_led_matrix == 8) {
 				index_led_matrix = 0;
 			}
-			timer_set(TIMER_LED_MATRIX, 250);
+			timer_set(TIMER_LED_MATRIX, 50);
 		}
 
 		if (timer_is_expired(TIMER_LED_MATRIX_SHIFT)) {
 			shift_left_matrix();
-			timer_set(TIMER_LED_MATRIX_SHIFT, 2000);
+			timer_set(TIMER_LED_MATRIX_SHIFT, 50*8);
 		}
 		/* USER CODE END WHILE */
 
