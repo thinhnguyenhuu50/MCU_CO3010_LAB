@@ -11,7 +11,8 @@
 const int MAX_LED_MATRIX = 8;
 int index_led_matrix = 0;
 
-uint8_t matrix_buffer[8] = {0xE7, 0xE7, 0xDB, 0xDB, 0x81, 0xBD, 0x7E, 0x7E};
+//uint8_t matrix_buffer[8] = {0xE7, 0xE7, 0xDB, 0xDB, 0x81, 0xBD, 0x7E, 0x7E};
+uint8_t matrix_buffer[8] = {0x00,0x42,0x62,0x52,0x4a,0x46,0x42,0x00};
 uint8_t row_map[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 
 void set_row (int num) {
@@ -26,14 +27,14 @@ void set_row (int num) {
 }
 
 void set_col(int num) {
-	HAL_GPIO_WritePin(ENM_0_GPIO_Port, ENM_0_Pin, (matrix_buffer[num] >> 7) & 1);
-	HAL_GPIO_WritePin(ENM_1_GPIO_Port, ENM_1_Pin, (matrix_buffer[num] >> 6) & 1);
-	HAL_GPIO_WritePin(ENM_2_GPIO_Port, ENM_2_Pin, (matrix_buffer[num] >> 5) & 1);
-	HAL_GPIO_WritePin(ENM_3_GPIO_Port, ENM_3_Pin, (matrix_buffer[num] >> 4) & 1);
-	HAL_GPIO_WritePin(ENM_4_GPIO_Port, ENM_4_Pin, (matrix_buffer[num] >> 3) & 1);
-	HAL_GPIO_WritePin(ENM_5_GPIO_Port, ENM_5_Pin, (matrix_buffer[num] >> 2) & 1);
-	HAL_GPIO_WritePin(ENM_6_GPIO_Port, ENM_6_Pin, (matrix_buffer[num] >> 1) & 1);
-	HAL_GPIO_WritePin(ENM_7_GPIO_Port, ENM_7_Pin, (matrix_buffer[num] >> 0) & 1);
+	HAL_GPIO_WritePin(ENM_0_GPIO_Port, ENM_0_Pin, ~(matrix_buffer[num] >> 7) & 1);
+	HAL_GPIO_WritePin(ENM_1_GPIO_Port, ENM_1_Pin, ~(matrix_buffer[num] >> 6) & 1);
+	HAL_GPIO_WritePin(ENM_2_GPIO_Port, ENM_2_Pin, ~(matrix_buffer[num] >> 5) & 1);
+	HAL_GPIO_WritePin(ENM_3_GPIO_Port, ENM_3_Pin, ~(matrix_buffer[num] >> 4) & 1);
+	HAL_GPIO_WritePin(ENM_4_GPIO_Port, ENM_4_Pin, ~(matrix_buffer[num] >> 3) & 1);
+	HAL_GPIO_WritePin(ENM_5_GPIO_Port, ENM_5_Pin, ~(matrix_buffer[num] >> 2) & 1);
+	HAL_GPIO_WritePin(ENM_6_GPIO_Port, ENM_6_Pin, ~(matrix_buffer[num] >> 1) & 1);
+	HAL_GPIO_WritePin(ENM_7_GPIO_Port, ENM_7_Pin, ~(matrix_buffer[num] >> 0) & 1);
 }
 
 void updateLEDMatrix(int index){
