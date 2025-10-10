@@ -92,6 +92,8 @@ int main(void)
 	MX_TIM2_Init();
 	/* USER CODE BEGIN 2 */
 	system_init();
+	timer_set(0, 10);
+	timer_set(1, 500);
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -102,11 +104,7 @@ int main(void)
 			timer_flag = 0;
 			timer_run();
 			button_scan();
-			if (button_is_pressed()) {
-				HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
-			}
 		}
-
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */

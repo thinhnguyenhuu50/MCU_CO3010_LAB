@@ -10,6 +10,8 @@
 
 #include "stdint.h"
 
+#define TIMER_PERIOD 10 // ms
+
 extern uint8_t timer_flag;
 
 void timer_init();

@@ -7,10 +7,8 @@
 
 #include "software_timer.h"
 #include "tim.h"
-#include "button.h"
 
 #define NUMBER_OF_TIMERS 10
-#define TIMER_PERIOD 10; // ms
 
 uint8_t timer_flag = 0;
 
