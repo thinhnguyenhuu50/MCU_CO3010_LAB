@@ -26,6 +26,7 @@
 #include "test.h"
 #include "software_timer.h"
 #include "button.h"
+#include "led7seg.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -92,8 +93,10 @@ int main(void)
 	MX_TIM2_Init();
 	/* USER CODE BEGIN 2 */
 	system_init();
-	timer_set(0, 10);
+	timer_set(0, 250);
 	timer_set(1, 500);
+	led_7seg_set_digit(1, 2, 3, 4);
+//	display7SEG(0);
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -105,6 +108,15 @@ int main(void)
 			timer_run();
 			button_scan();
 		}
+//		if (button_is_pressed(0)) {
+//			enable_seg(0);
+//		}
+//		if (button_is_pressed(1)) {
+//			enable_seg(1);
+//		}
+				if (timer_is_expired(0)) {
+					led_7seg_display();
+				}
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
