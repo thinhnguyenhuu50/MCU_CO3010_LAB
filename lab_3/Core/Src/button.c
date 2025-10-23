@@ -1,5 +1,7 @@
 #include "button.h"
 
+#define NUMBER_OF_BUTTONS 3
+
 // Private
 static struct {
 	uint8_t first_state; // active low
