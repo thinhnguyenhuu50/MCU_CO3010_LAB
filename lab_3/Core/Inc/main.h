@@ -87,10 +87,18 @@ void Error_Handler(void);
 #define EN_2_GPIO_Port GPIOA
 #define EN_3_Pin GPIO_PIN_11
 #define EN_3_GPIO_Port GPIOA
-#define EN_4_Pin GPIO_PIN_12
-#define EN_4_GPIO_Port GPIOA
-#define EN_5_Pin GPIO_PIN_13
-#define EN_5_GPIO_Port GPIOA
+#define GREEN1_Pin GPIO_PIN_3
+#define GREEN1_GPIO_Port GPIOB
+#define AMBER1_Pin GPIO_PIN_4
+#define AMBER1_GPIO_Port GPIOB
+#define RED1_Pin GPIO_PIN_5
+#define RED1_GPIO_Port GPIOB
+#define GREEN2_Pin GPIO_PIN_6
+#define GREEN2_GPIO_Port GPIOB
+#define AMBER2_Pin GPIO_PIN_7
+#define AMBER2_GPIO_Port GPIOB
+#define RED2_Pin GPIO_PIN_8
+#define RED2_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

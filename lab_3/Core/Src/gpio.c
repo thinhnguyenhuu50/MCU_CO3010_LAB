@@ -46,17 +46,18 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, LED_DEBUG_Pin|LED7SEG_a_Pin|LED7SEG_b_Pin|LED7SEG_c_Pin
                           |LED7SEG_d_Pin|LED7SEG_e_Pin|LED7SEG_f_Pin|LED7SEG_g_Pin
-                          |EN_0_Pin|EN_1_Pin|EN_2_Pin|EN_3_Pin
-                          |EN_4_Pin|EN_5_Pin, GPIO_PIN_RESET);
+                          |EN_0_Pin|EN_1_Pin|EN_2_Pin|EN_3_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, GREEN1_Pin|AMBER1_Pin|RED1_Pin|GREEN2_Pin
+                          |AMBER2_Pin|RED2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : LED_DEBUG_Pin LED7SEG_a_Pin LED7SEG_b_Pin LED7SEG_c_Pin
                            LED7SEG_d_Pin LED7SEG_e_Pin LED7SEG_f_Pin LED7SEG_g_Pin
-                           EN_0_Pin EN_1_Pin EN_2_Pin EN_3_Pin
-                           EN_4_Pin EN_5_Pin */
+                           EN_0_Pin EN_1_Pin EN_2_Pin EN_3_Pin */
   GPIO_InitStruct.Pin = LED_DEBUG_Pin|LED7SEG_a_Pin|LED7SEG_b_Pin|LED7SEG_c_Pin
                           |LED7SEG_d_Pin|LED7SEG_e_Pin|LED7SEG_f_Pin|LED7SEG_g_Pin
-                          |EN_0_Pin|EN_1_Pin|EN_2_Pin|EN_3_Pin
-                          |EN_4_Pin|EN_5_Pin;
+                          |EN_0_Pin|EN_1_Pin|EN_2_Pin|EN_3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -66,6 +67,15 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = BUTTON_0_Pin|BUTTON_1_Pin|BUTTON_2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : GREEN1_Pin AMBER1_Pin RED1_Pin GREEN2_Pin
+                           AMBER2_Pin RED2_Pin */
+  GPIO_InitStruct.Pin = GREEN1_Pin|AMBER1_Pin|RED1_Pin|GREEN2_Pin
+                          |AMBER2_Pin|RED2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
