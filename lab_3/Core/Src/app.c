@@ -15,7 +15,9 @@
 #define DEFAULT_AMBER_TIME  2
 #define DEFAULT_GREEN_TIME  3
 
+// Timer indexes
 #define TIMER_ONE_SECOND	0
+#define TIMER_LED_BLINKING	1
 
 typedef enum {INIT, NORMAL, SET_RED, SET_AMBER, SET_GREEN} status_Mode_t;
 /**
@@ -24,7 +26,7 @@ typedef enum {INIT, NORMAL, SET_RED, SET_AMBER, SET_GREEN} status_Mode_t;
  * P2: R1=GREEN, R2=RED     | P3: R1=AMBER, R2=RED
  */
 typedef enum {RED_GREEN, RED_AMBER, GREEN_RED, AMBER_RED} status_Traffic_light_t;
-enum {BUTTON_SELLECT_MODE, BUTTON_MODIFY, BUTTON_SET};
+enum {BUTTON_SELLECT_MODE, BUTTON_INCREASE, BUTTON_SET};
 typedef enum {GREEN, AMBER, RED} color_t;
 
 static status_Mode_t status_Mode = INIT;
@@ -35,6 +37,11 @@ static uint8_t map_of_led_state[3] = {0x01, 0x02, 0x04};
 static uint8_t green_duration 	= DEFAULT_GREEN_TIME;
 static uint8_t amber_duration 	= DEFAULT_AMBER_TIME;
 static uint8_t red_duration 	= DEFAULT_RED_TIME;
+
+// Read from user via buttons
+static uint8_t green_input = 1;
+static uint8_t amber_input = 1;
+static uint8_t red_input = 1;
 
 static uint8_t countdown1 = 0;
 static uint8_t countdown2 = 0;
@@ -51,28 +58,43 @@ static void traffic_light_run();
 // APIs
 void app_Set_timer() {
 	timer_set(TIMER_ONE_SECOND, 500);
+	timer_set(TIMER_LED_BLINKING, 500);
 }
 
 void app_Select_mode() {
 	switch (status_Mode) {
 	case INIT:
 		light_disable();
+		countdown1 = red_duration;
+		countdown2 = green_duration;
 		status_Mode = NORMAL;
 		break;
 	case NORMAL:
-		// TODO: A traffic light system running properly
 		traffic_light_run();
+
 		// Condition to move to next state
 		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
+			light_disable();
+			red_input = 1;
 			status_Mode = SET_RED;
 		}
 		break;
 	case SET_RED:
-		// Debug
-		light_set1(RED);
+		if (timer_is_expired(TIMER_LED_BLINKING)) {
+			HAL_GPIO_TogglePin(RED1_GPIO_Port, RED1_Pin);
+			HAL_GPIO_TogglePin(RED2_GPIO_Port, RED2_Pin);
+		}
 
-		set_led7seg_Road1(12);
-		set_led7seg_Road2(12);
+		if (button_is_pressed(BUTTON_INCREASE)) {
+			++red_input;
+		}
+
+		if (red_input == 100) {
+			red_input = 1;
+		}
+
+		set_led7seg_Road1(red_input);
+		set_led7seg_Road2(2);
 
 		// Condition to move to next state
 		if (button_is_pressed(BUTTON_SELLECT_MODE)) {

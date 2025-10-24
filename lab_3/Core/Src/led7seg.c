@@ -28,8 +28,13 @@ void _led7seg_en(int num) {
 
 // APIs
 void led7seg_scan() {
-	_led7seg_en(led7seg_index);
+	HAL_GPIO_WritePin(EN_3_GPIO_Port, EN_3_Pin, 1);
+	HAL_GPIO_WritePin(EN_2_GPIO_Port, EN_2_Pin, 1);
+	HAL_GPIO_WritePin(EN_1_GPIO_Port, EN_1_Pin, 1);
+	HAL_GPIO_WritePin(EN_0_GPIO_Port, EN_0_Pin, 1);
+
 	_led7seg_display(led_7seg[led7seg_index]);
+	_led7seg_en(led7seg_index);
 	++led7seg_index;
 	if (led7seg_index >= NUMBER_OF_LED7SEG) {
 		led7seg_index = 0;
