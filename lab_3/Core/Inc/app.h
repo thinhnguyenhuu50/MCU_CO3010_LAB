@@ -8,6 +8,7 @@
 #ifndef INC_APP_H_
 #define INC_APP_H_
 
-void select_mode();
+void app_Set_timer();
+void app_Select_mode();
 
 #endif /* INC_APP_H_ */

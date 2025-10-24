@@ -9,37 +9,62 @@
 #include "gpio.h"
 #include "button.h"
 #include "led7seg.h"
+#include "software_timer.h"
 
-typedef enum {INIT, NORMAL, SET_RED, SET_AMBER, SET_GREEN} Status_t;
+#define DEFAULT_RED_TIME  	5
+#define DEFAULT_AMBER_TIME  2
+#define DEFAULT_GREEN_TIME  3
+
+#define TIMER_ONE_SECOND	0
+
+typedef enum {INIT, NORMAL, SET_RED, SET_AMBER, SET_GREEN} status_Mode_t;
+/**
+ * The light states of each phase are applied for the both roads as follow:
+ * P0: R1=RED, R2=GREEN     | P1: R1=RED, R2=AMBER
+ * P2: R1=GREEN, R2=RED     | P3: R1=AMBER, R2=RED
+ */
+typedef enum {RED_GREEN, RED_AMBER, GREEN_RED, AMBER_RED} status_Traffic_light_t;
 enum {BUTTON_SELLECT_MODE, BUTTON_MODIFY, BUTTON_SET};
-typedef enum {GREEN, AMBER, RED} Color_t;
+typedef enum {GREEN, AMBER, RED} color_t;
 
-static Status_t status = INIT;
+static status_Mode_t status_Mode = INIT;
+static status_Traffic_light_t status_Traffic_light = RED_GREEN;
 
-uint8_t map_of_led_state[3] = {0x01, 0x02, 0x04};
+static uint8_t map_of_led_state[3] = {0x01, 0x02, 0x04};
 
+static uint8_t green_duration 	= DEFAULT_GREEN_TIME;
+static uint8_t amber_duration 	= DEFAULT_AMBER_TIME;
+static uint8_t red_duration 	= DEFAULT_RED_TIME;
+
+static uint8_t countdown1 = 0;
+static uint8_t countdown2 = 0;
 // Forward declaration
 static void set_led7seg_Road1(uint8_t number);
 static void set_led7seg_Road2(uint8_t number);
 
-static void light_set1(Color_t color);
+static void light_set1(color_t color);
+static void light_set2(color_t color);
 static void light_disable();
 
+static void traffic_light_run();
+
 // APIs
-void select_mode() {
-	switch (status) {
+void app_Set_timer() {
+	timer_set(TIMER_ONE_SECOND, 500);
+}
+
+void app_Select_mode() {
+	switch (status_Mode) {
 	case INIT:
 		light_disable();
-		status = NORMAL;
+		status_Mode = NORMAL;
 		break;
 	case NORMAL:
-		// debug
-		set_led7seg_Road1(11);
-		set_led7seg_Road2(11);
-
+		// TODO: A traffic light system running properly
+		traffic_light_run();
 		// Condition to move to next state
 		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
-			status = SET_RED;
+			status_Mode = SET_RED;
 		}
 		break;
 	case SET_RED:
@@ -51,7 +76,7 @@ void select_mode() {
 
 		// Condition to move to next state
 		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
-			status = SET_AMBER;
+			status_Mode = SET_AMBER;
 		}
 		break;
 	case SET_AMBER:
@@ -63,7 +88,7 @@ void select_mode() {
 
 		// Condition to move to next state
 		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
-			status = SET_GREEN;
+			status_Mode = SET_GREEN;
 		}
 		break;
 	case SET_GREEN:
@@ -75,7 +100,7 @@ void select_mode() {
 
 		// Condition to move to next state
 		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
-			status = NORMAL;
+			status_Mode = NORMAL;
 		}
 		break;
 	default:
@@ -94,10 +119,16 @@ static void set_led7seg_Road2(uint8_t number){
 	led7seg_set(3, number%10);
 }
 
-static void light_set1(Color_t color) {
+static void light_set1(color_t color) {
 	HAL_GPIO_WritePin(GREEN1_GPIO_Port, GREEN1_Pin, !(map_of_led_state[color] & (1<<0)));
 	HAL_GPIO_WritePin(AMBER1_GPIO_Port, AMBER1_Pin, !(map_of_led_state[color] & (1<<1)));
-	HAL_GPIO_WritePin(RED1_GPIO_Port, RED1_Pin, !(map_of_led_state[color] & (1<<2)));
+	HAL_GPIO_WritePin(RED1_GPIO_Port, 	RED1_Pin, 	!(map_of_led_state[color] & (1<<2)));
+}
+
+static void light_set2(color_t color) {
+	HAL_GPIO_WritePin(GREEN2_GPIO_Port, GREEN2_Pin, !(map_of_led_state[color] & (1<<0)));
+	HAL_GPIO_WritePin(AMBER2_GPIO_Port, AMBER2_Pin, !(map_of_led_state[color] & (1<<1)));
+	HAL_GPIO_WritePin(RED2_GPIO_Port,   RED2_Pin,   !(map_of_led_state[color] & (1<<2)));
 }
 
 static void light_disable() {
@@ -107,4 +138,60 @@ static void light_disable() {
 	HAL_GPIO_WritePin(GREEN2_GPIO_Port, GREEN2_Pin, 1);
 	HAL_GPIO_WritePin(AMBER2_GPIO_Port, AMBER2_Pin, 1);
 	HAL_GPIO_WritePin(RED2_GPIO_Port, RED2_Pin, 1);
+}
+
+static void traffic_light_run() {
+	switch (status_Traffic_light) {
+	case RED_GREEN:
+		light_set1(RED);
+		light_set2(GREEN);
+
+		if (countdown2 == 0) {
+			status_Traffic_light = RED_AMBER;
+
+			countdown2 = amber_duration;
+		}
+		break;
+	case RED_AMBER:
+		light_set1(RED);
+		light_set2(AMBER);
+
+		if (countdown2 == 0) {
+			status_Traffic_light = GREEN_RED;
+
+			countdown1 = green_duration;
+			countdown2 = red_duration;
+		}
+		break;
+	case GREEN_RED:
+		light_set1(GREEN);
+		light_set2(RED);
+
+		if (countdown1 == 0) {
+			status_Traffic_light = AMBER_RED;
+
+			countdown1 = amber_duration;
+		}
+		break;
+	case AMBER_RED:
+		light_set1(AMBER);
+		light_set2(RED);
+
+		if (countdown1 == 0) {
+			status_Traffic_light = RED_GREEN;
+			countdown1 = red_duration;
+			countdown2 = green_duration;
+		}
+		break;
+	default:
+		break;
+	}
+
+	if (timer_is_expired(TIMER_ONE_SECOND)) {
+		--countdown1;
+		--countdown2;
+	}
+
+	set_led7seg_Road1(countdown1);
+	set_led7seg_Road2(countdown2);
 }
