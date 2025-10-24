@@ -63,7 +63,7 @@ static void button_process(uint8_t *input);
 void app_Set_timer() {
 	timer_set(TIMER_ONE_SECOND, 1000);
 	timer_set(TIMER_LED_BLINKING, 500);
-	timer_set(TIMER_INCREASE_VALUE, 100);
+	timer_set(TIMER_INCREASE_VALUE, 200);
 }
 
 void app_Select_mode() {
@@ -72,6 +72,7 @@ void app_Select_mode() {
 		light_disable();
 		countdown1 = red_duration;
 		countdown2 = green_duration;
+		status_Traffic_light = RED_GREEN;
 		status_Mode = NORMAL;
 		break;
 	case NORMAL:
@@ -100,30 +101,58 @@ void app_Select_mode() {
 
 		// Condition to move to the next state
 		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
+			light_disable();
+			amber_input = amber_duration;
+			countUp = 1;
 			status_Mode = SET_AMBER;
 		}
 		break;
 	case SET_AMBER:
-		// Debug
-		light_set1(AMBER);
+		if (timer_is_expired(TIMER_LED_BLINKING)) {
+			HAL_GPIO_TogglePin(AMBER1_GPIO_Port, AMBER1_Pin);
+			HAL_GPIO_TogglePin(AMBER2_GPIO_Port, AMBER2_Pin);
+		}
 
-		set_led7seg_Road1(13);
-		set_led7seg_Road2(13);
+		// Button process
+		button_process(&amber_input);
+
+		// Display value and mode number
+		set_led7seg_Road1(countUp);
+		set_led7seg_Road2(3);
 
 		// Condition to move to next state
 		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
+			light_disable();
+			green_input = green_duration;
+			countUp = 1;
 			status_Mode = SET_GREEN;
 		}
 		break;
 	case SET_GREEN:
-		// Debug
-		light_set1(GREEN);
+		if (timer_is_expired(TIMER_LED_BLINKING)) {
+			HAL_GPIO_TogglePin(GREEN1_GPIO_Port, GREEN1_Pin);
+			HAL_GPIO_TogglePin(GREEN2_GPIO_Port, GREEN2_Pin);
+		}
 
-		set_led7seg_Road1(14);
-		set_led7seg_Road2(14);
+		// Button process
+		button_process(&green_input);
+
+		// Display value and mode number
+		set_led7seg_Road1(countUp);
+		set_led7seg_Road2(4);
 
 		// Condition to move to the next state
 		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
+			if (red_input == green_input + amber_input) {
+				red_duration = red_input;
+				amber_duration = amber_input;
+				green_duration = green_input;
+			}
+			timer_is_expired(TIMER_ONE_SECOND); // Just to reset timer flag
+			light_disable();
+			countdown1 = red_duration;
+			countdown2 = green_duration;
+			status_Traffic_light = RED_GREEN;
 			status_Mode = NORMAL;
 		}
 		break;
@@ -211,13 +240,13 @@ static void traffic_light_run() {
 		break;
 	}
 
+	set_led7seg_Road1(countdown1);
+	set_led7seg_Road2(countdown2);
+
 	if (timer_is_expired(TIMER_ONE_SECOND)) {
 		--countdown1;
 		--countdown2;
 	}
-
-	set_led7seg_Road1(countdown1);
-	set_led7seg_Road2(countdown2);
 }
 
 static void button_process(uint8_t *input) {
@@ -236,6 +265,6 @@ static void button_process(uint8_t *input) {
 	}
 
 	if (button_is_pressed(BUTTON_SET)) {
-		red_input = countUp;
+		*input = countUp;
 	}
 }

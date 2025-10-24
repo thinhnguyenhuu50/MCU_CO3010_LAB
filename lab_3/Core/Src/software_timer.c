@@ -8,7 +8,7 @@
 #include "software_timer.h"
 #include "tim.h"
 
-#define NUMBER_OF_TIMERS 10
+#define NUMBER_OF_TIMERS 5
 
 uint8_t timer_flag = 0;
 

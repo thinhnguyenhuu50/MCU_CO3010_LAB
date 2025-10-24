@@ -96,6 +96,7 @@ int main(void)
 	/* USER CODE BEGIN 2 */
 	system_init();
 	app_Set_timer();
+	HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, 1);
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
