@@ -16,8 +16,9 @@
 #define DEFAULT_GREEN_TIME  3
 
 // Timer indexes
-#define TIMER_ONE_SECOND	0
-#define TIMER_LED_BLINKING	1
+#define TIMER_ONE_SECOND		0
+#define TIMER_LED_BLINKING		1
+#define TIMER_INCREASE_VALUE 	2
 
 typedef enum {INIT, NORMAL, SET_RED, SET_AMBER, SET_GREEN} status_Mode_t;
 /**
@@ -39,6 +40,7 @@ static uint8_t amber_duration 	= DEFAULT_AMBER_TIME;
 static uint8_t red_duration 	= DEFAULT_RED_TIME;
 
 // Read from user via buttons
+static uint8_t countUp = 1;
 static uint8_t green_input = 1;
 static uint8_t amber_input = 1;
 static uint8_t red_input = 1;
@@ -55,10 +57,13 @@ static void light_disable();
 
 static void traffic_light_run();
 
+static void button_process(uint8_t *input);
+
 // APIs
 void app_Set_timer() {
-	timer_set(TIMER_ONE_SECOND, 500);
+	timer_set(TIMER_ONE_SECOND, 1000);
 	timer_set(TIMER_LED_BLINKING, 500);
+	timer_set(TIMER_INCREASE_VALUE, 100);
 }
 
 void app_Select_mode() {
@@ -72,10 +77,11 @@ void app_Select_mode() {
 	case NORMAL:
 		traffic_light_run();
 
-		// Condition to move to next state
+		// Condition to move to the next state
 		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
 			light_disable();
-			red_input = 1;
+			red_input = red_duration;
+			countUp = 1;
 			status_Mode = SET_RED;
 		}
 		break;
@@ -85,18 +91,14 @@ void app_Select_mode() {
 			HAL_GPIO_TogglePin(RED2_GPIO_Port, RED2_Pin);
 		}
 
-		if (button_is_pressed(BUTTON_INCREASE)) {
-			++red_input;
-		}
+		// Button process
+		button_process(&red_input);
 
-		if (red_input == 100) {
-			red_input = 1;
-		}
-
-		set_led7seg_Road1(red_input);
+		// Display value and mode number
+		set_led7seg_Road1(countUp);
 		set_led7seg_Road2(2);
 
-		// Condition to move to next state
+		// Condition to move to the next state
 		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
 			status_Mode = SET_AMBER;
 		}
@@ -120,7 +122,7 @@ void app_Select_mode() {
 		set_led7seg_Road1(14);
 		set_led7seg_Road2(14);
 
-		// Condition to move to next state
+		// Condition to move to the next state
 		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
 			status_Mode = NORMAL;
 		}
@@ -216,4 +218,24 @@ static void traffic_light_run() {
 
 	set_led7seg_Road1(countdown1);
 	set_led7seg_Road2(countdown2);
+}
+
+static void button_process(uint8_t *input) {
+	if (button_is_pressed(BUTTON_INCREASE)) {
+		++countUp;
+		if (countUp == 100) {
+			countUp = 1;
+		}
+	}
+
+	if (button_is_held(BUTTON_INCREASE, 250) && timer_is_expired(TIMER_INCREASE_VALUE)) {
+		++countUp;
+		if (countUp == 100) {
+			countUp = 1;
+		}
+	}
+
+	if (button_is_pressed(BUTTON_SET)) {
+		red_input = countUp;
+	}
 }
