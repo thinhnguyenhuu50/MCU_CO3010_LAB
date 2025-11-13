@@ -1,6 +1,5 @@
 #include "led7seg.h"
 #include "main.h"
-#include "hardware_layer.h"
 
 #define NUMBER_OF_LED7SEG 	4
 

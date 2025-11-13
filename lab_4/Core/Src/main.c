@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "scheduler.h"
 #include "led7seg.h"
+#include "fsm_auto.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -60,13 +61,6 @@ void toggle_led() {
 	HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
 }
 
-void increase() {
-	static int counter = 0;
-	led7seg_set(0, counter++);
-	if (counter >= 10) {
-		counter = 0;
-	}
-}
 /* USER CODE END 0 */
 
 /**
@@ -101,14 +95,9 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   system_init();
-  SCH_add(toggle_led, 0, 1000);
-  SCH_add(led7seg_scan, 0, 10);
-  SCH_add(increase, 0, 1000);
-
-  led7seg_set(0, 1);
-  led7seg_set(1, 2);
-  led7seg_set(2, 3);
-  led7seg_set(3, 4);
+//  SCH_add(toggle_led, 2, 1000);
+  SCH_add(led7seg_scan, 3, 10);
+  SCH_add(fsm_auto, 5, 1000);
   /* USER CODE END 2 */
 
   /* Infinite loop */

@@ -8,26 +8,128 @@
 #include "fsm_auto.h"
 #include "global.h"
 #include "stdint.h"
+#include "gpio.h"
+#include "led7seg.h"
 
-static uint8_t countDown1 = 0;
-static uint8_t countDown2 = 0;
+static uint8_t map_of_led_state[3] = {0x01, 0x02, 0x04};
+
+static uint8_t countDown1 = 9;
+static uint8_t countDown2 = 9;
+
+// Forward declaration
+static void set_led7seg_Road1(uint8_t number);
+static void set_led7seg_Road2(uint8_t number);
+static void countdown();
+
+static void light_set1(color_t color);
+static void light_set2(color_t color);
+static void light_disable();
 
 void fsm_auto() {
 	switch (status) {
-		case COUNT_DOWN:
+	case INIT:
+		light_disable();
 
-			break;
+		countDown1 = red_duration;
+		countDown2 = green_duration;
 
-		case RED_GREEN:
-			break;
-		case RED_AMBER:
-			break;
-		case GREEN_RED:
-			break;
-		case AMBER_RED:
-			break;
-		default:
-			break;
+		status = RED_GREEN;
+		break;
+
+	case RED_GREEN:
+		countdown();
+
+		light_set1(RED);
+		light_set2(GREEN);
+
+		if (countDown2 <= 0) {
+			countDown2 = amber_duration;
+
+			status = RED_AMBER;
+		}
+		break;
+
+	case RED_AMBER:
+		countdown();
+
+		light_set1(RED);
+		light_set2(AMBER);
+
+		if (countDown2 <= 0) {
+			countDown1 = green_duration;
+			countDown2 = red_duration;
+
+			status = GREEN_RED;
+		}
+		break;
+
+	case GREEN_RED:
+		countdown();
+
+		light_set1(GREEN);
+		light_set2(RED);
+
+		if (countDown1 <= 0) {
+			countDown1 = amber_duration;
+
+			status = AMBER_RED;
+		}
+		break;
+
+	case AMBER_RED:
+		countdown();
+
+		light_set1(AMBER);
+		light_set2(RED);
+
+		if (countDown1 <= 0) {
+			countDown1 = red_duration;
+			countDown2 = green_duration;
+
+			status = RED_GREEN;
+		}
+		break;
+
+	default:
+		break;
 	}
 }
 
+// Supported functions
+static void set_led7seg_Road1(uint8_t number){
+	led7seg_set(0, number/10);
+	led7seg_set(1, number%10);
+}
+
+static void set_led7seg_Road2(uint8_t number){
+	led7seg_set(2, number/10);
+	led7seg_set(3, number%10);
+}
+
+static void light_set1(color_t color) {
+	HAL_GPIO_WritePin(GREEN1_GPIO_Port, GREEN1_Pin, !(map_of_led_state[color] & (1<<0)));
+	HAL_GPIO_WritePin(AMBER1_GPIO_Port, AMBER1_Pin, !(map_of_led_state[color] & (1<<1)));
+	HAL_GPIO_WritePin(RED1_GPIO_Port, 	RED1_Pin, 	!(map_of_led_state[color] & (1<<2)));
+}
+
+static void light_set2(color_t color) {
+	HAL_GPIO_WritePin(GREEN2_GPIO_Port, GREEN2_Pin, !(map_of_led_state[color] & (1<<0)));
+	HAL_GPIO_WritePin(AMBER2_GPIO_Port, AMBER2_Pin, !(map_of_led_state[color] & (1<<1)));
+	HAL_GPIO_WritePin(RED2_GPIO_Port,   RED2_Pin,   !(map_of_led_state[color] & (1<<2)));
+}
+
+static void light_disable() {
+	HAL_GPIO_WritePin(GREEN1_GPIO_Port, GREEN1_Pin, 1);
+	HAL_GPIO_WritePin(AMBER1_GPIO_Port, AMBER1_Pin, 1);
+	HAL_GPIO_WritePin(RED1_GPIO_Port, RED1_Pin, 1);
+	HAL_GPIO_WritePin(GREEN2_GPIO_Port, GREEN2_Pin, 1);
+	HAL_GPIO_WritePin(AMBER2_GPIO_Port, AMBER2_Pin, 1);
+	HAL_GPIO_WritePin(RED2_GPIO_Port, RED2_Pin, 1);
+}
+
+static void countdown() {
+	set_led7seg_Road1(countDown1);
+	set_led7seg_Road2(countDown2);
+	--countDown1;
+	--countDown2;
+}
