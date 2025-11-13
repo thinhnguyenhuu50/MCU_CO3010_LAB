@@ -23,7 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "scheduler.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,12 +50,14 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void system_init(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void toggle_led() {
+	HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
+}
 /* USER CODE END 0 */
 
 /**
@@ -89,7 +91,8 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-
+  system_init();
+  SCH_add(toggle_led, 1000, 0);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -97,7 +100,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+  	SCH_dispatch();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -140,7 +143,9 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void system_init(void) {
+	SCH_init();
+}
 /* USER CODE END 4 */
 
 /**
