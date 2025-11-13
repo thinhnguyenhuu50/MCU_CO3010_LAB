@@ -7,6 +7,10 @@
 
 #include "fsm_auto.h"
 #include "global.h"
+#include "stdint.h"
+
+static uint8_t countDown1 = 0;
+static uint8_t countDown2 = 0;
 
 void fsm_auto() {
 	switch (status) {
