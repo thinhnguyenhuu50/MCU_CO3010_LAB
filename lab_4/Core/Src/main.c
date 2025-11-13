@@ -92,15 +92,16 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   system_init();
-  SCH_add(toggle_led, 1000, 0);
+  SCH_add(toggle_led, 0, 1000);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
   	SCH_dispatch();
+    /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
