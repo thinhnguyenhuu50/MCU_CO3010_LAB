@@ -9,8 +9,9 @@
 #include "global.h"
 #include "gpio.h"
 #include "scheduler.h"
+#include "button.h"
 
-static int8_t task1 = -1, task2 = -1, task3 = -1;
+static int8_t task_ID_red = -1, task_ID_amber = -1, task_ID_green = -1;
 
 // Forward declaration
 static void blink_red();
@@ -19,29 +20,43 @@ static void blink_green();
 
 void fsm_config() {
 	switch (status) {
-		case SET_RED:
-			if (task1 == -1) {
-				task1 = SCH_add(blink_red, 0, 500);
-			}
-			break;
-		case SET_AMBER:
-			SCH_delete(task1);
-			task1 = -1;
+	case SET_RED:
+		if (task_ID_red == -1) {
+			task_ID_red = SCH_add(blink_red, 0, 500);
+		}
 
-			if (task2 == -1) {
-				task2 = SCH_add(blink_amber, 0, 500);
-			}
-			break;
-		case SET_GREEN:
-			SCH_delete(task2);
-			task2 = -1;
+		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
+			light_disable();
+			SCH_delete(task_ID_red);
+			task_ID_red = -1;
+			status = SET_AMBER;
+		}
+		break;
+	case SET_AMBER:
+		if (task_ID_amber == -1) {
+			task_ID_amber = SCH_add(blink_amber, 0, 500);
+		}
 
-			if (task3 == -1) {
-				task3 = SCH_add(blink_green, 0, 500);
-			}
+		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
+			light_disable();
+			SCH_delete(task_ID_amber);
+			task_ID_amber = -1;
+			status = SET_GREEN;
+		}
+		break;
+	case SET_GREEN:
+		if (task_ID_green == -1) {
+			task_ID_green = SCH_add(blink_green, 0, 500);
+		}
 
-		default:
-			break;
+		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
+			light_disable();
+			SCH_delete(task_ID_green);
+			task_ID_green = -1;
+			status = INIT;
+		}
+	default:
+		break;
 	}
 }
 

@@ -11,11 +11,14 @@
 #include "gpio.h"
 #include "led7seg.h"
 #include "scheduler.h"
+#include "button.h"
 
 static uint8_t map_of_led_state[3] = {0x01, 0x02, 0x04};
 
 static uint8_t countDown1 = 9;
 static uint8_t countDown2 = 9;
+
+static int8_t task_ID_countdown = -1;
 
 // Forward declaration
 static void set_led7seg_Road1(uint8_t number);
@@ -26,8 +29,11 @@ static void light_set1(color_t color);
 static void light_set2(color_t color);
 
 void fsm_auto() {
-	if (task_ID_countdown == -1) {
-		task_ID_countdown = SCH_add(countdown, 1000, 1000);
+	if (button_is_pressed(BUTTON_SELLECT_MODE)) {
+		SCH_delete(task_ID_countdown);
+		task_ID_countdown = -1;
+		light_disable();
+		status = SET_RED;
 	}
 
 	switch (status) {
@@ -39,6 +45,10 @@ void fsm_auto() {
 
 		set_led7seg_Road1(countDown1);
 		set_led7seg_Road2(countDown2);
+
+		if (task_ID_countdown == -1) {
+			task_ID_countdown = SCH_add(countdown, 1000, 1000);
+		}
 
 		status = RED_GREEN;
 		break;
@@ -53,6 +63,7 @@ void fsm_auto() {
 
 			status = RED_AMBER;
 		}
+
 		break;
 
 	case RED_AMBER:

@@ -25,8 +25,8 @@
 /* USER CODE BEGIN Includes */
 #include "scheduler.h"
 #include "led7seg.h"
-#include "fsm_auto.h"
 #include "button.h"
+#include "fsm_auto.h"
 #include "fsm_config.h"
 /* USER CODE END Includes */
 
@@ -102,8 +102,7 @@ int main(void)
   SCH_add(button_scan, 0, 10);
 
   SCH_add(fsm_auto, 5, 10);
-//  SCH_add(fsm_config, 0, 10);
-//  SCH_add(next_mode, 0, 10);
+  SCH_add(fsm_config, 0, 10);
   /* USER CODE END 2 */
 
   /* Infinite loop */

@@ -20,8 +20,6 @@ extern uint8_t green_duration;
 extern uint8_t amber_duration;
 extern uint8_t red_duration;
 
-extern int8_t task_ID_countdown;
-
 void light_disable();
 
 #endif /* INC_GLOBAL_H_ */
