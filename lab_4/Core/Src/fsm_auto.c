@@ -23,7 +23,6 @@ static void countdown();
 
 static void light_set1(color_t color);
 static void light_set2(color_t color);
-static void light_disable();
 
 void fsm_auto() {
 	switch (status) {
@@ -116,15 +115,6 @@ static void light_set2(color_t color) {
 	HAL_GPIO_WritePin(GREEN2_GPIO_Port, GREEN2_Pin, !(map_of_led_state[color] & (1<<0)));
 	HAL_GPIO_WritePin(AMBER2_GPIO_Port, AMBER2_Pin, !(map_of_led_state[color] & (1<<1)));
 	HAL_GPIO_WritePin(RED2_GPIO_Port,   RED2_Pin,   !(map_of_led_state[color] & (1<<2)));
-}
-
-static void light_disable() {
-	HAL_GPIO_WritePin(GREEN1_GPIO_Port, GREEN1_Pin, 1);
-	HAL_GPIO_WritePin(AMBER1_GPIO_Port, AMBER1_Pin, 1);
-	HAL_GPIO_WritePin(RED1_GPIO_Port, RED1_Pin, 1);
-	HAL_GPIO_WritePin(GREEN2_GPIO_Port, GREEN2_Pin, 1);
-	HAL_GPIO_WritePin(AMBER2_GPIO_Port, AMBER2_Pin, 1);
-	HAL_GPIO_WritePin(RED2_GPIO_Port, RED2_Pin, 1);
 }
 
 static void countdown() {

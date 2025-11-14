@@ -7,13 +7,15 @@
 
 #include "scheduler.h"
 #include "tim.h"
+#include "stdint.h"
+
 sTasks SCH_tasks_G[SCH_MAX_TASKS];
 
 void SCH_init(void) {
 	HAL_TIM_Base_Start_IT(&htim2);
 }
 
-unsigned char SCH_add(void (*pFunction)(), unsigned int DELAY, unsigned int PERIOD) {
+uint8_t SCH_add(void (*pFunction)(), unsigned int DELAY, unsigned int PERIOD) {
 	unsigned char Index = 0;
 
 	while ((SCH_tasks_G[Index].pTask != 0) && (Index < SCH_MAX_TASKS))

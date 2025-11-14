@@ -23,7 +23,7 @@ typedef struct {
 } sTasks;
 
 void SCH_init(void);
-unsigned char SCH_add(void (*pFunction)(), unsigned int DELAY, unsigned int PERIOD);
+uint8_t SCH_add(void (*pFunction)(), unsigned int DELAY, unsigned int PERIOD);
 void SCH_update(void);
 void SCH_dispatch(void);
 unsigned char SCH_delete(const uint8_t index);
