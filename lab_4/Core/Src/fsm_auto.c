@@ -10,6 +10,7 @@
 #include "stdint.h"
 #include "gpio.h"
 #include "led7seg.h"
+#include "scheduler.h"
 
 static uint8_t map_of_led_state[3] = {0x01, 0x02, 0x04};
 
@@ -25,6 +26,10 @@ static void light_set1(color_t color);
 static void light_set2(color_t color);
 
 void fsm_auto() {
+	if (task_ID_countdown == -1) {
+		task_ID_countdown = SCH_add(countdown, 1000, 1000);
+	}
+
 	switch (status) {
 	case INIT:
 		light_disable();
@@ -32,25 +37,25 @@ void fsm_auto() {
 		countDown1 = red_duration;
 		countDown2 = green_duration;
 
+		set_led7seg_Road1(countDown1);
+		set_led7seg_Road2(countDown2);
+
 		status = RED_GREEN;
 		break;
 
 	case RED_GREEN:
-		countdown();
-
 		light_set1(RED);
 		light_set2(GREEN);
 
 		if (countDown2 <= 0) {
 			countDown2 = amber_duration;
+			set_led7seg_Road2(countDown2);
 
 			status = RED_AMBER;
 		}
 		break;
 
 	case RED_AMBER:
-		countdown();
-
 		light_set1(RED);
 		light_set2(AMBER);
 
@@ -58,32 +63,36 @@ void fsm_auto() {
 			countDown1 = green_duration;
 			countDown2 = red_duration;
 
+			set_led7seg_Road1(countDown1);
+			set_led7seg_Road2(countDown2);
+
 			status = GREEN_RED;
 		}
 		break;
 
 	case GREEN_RED:
-		countdown();
-
 		light_set1(GREEN);
 		light_set2(RED);
 
 		if (countDown1 <= 0) {
 			countDown1 = amber_duration;
 
+			set_led7seg_Road1(countDown1);
+
 			status = AMBER_RED;
 		}
 		break;
 
 	case AMBER_RED:
-		countdown();
-
 		light_set1(AMBER);
 		light_set2(RED);
 
 		if (countDown1 <= 0) {
 			countDown1 = red_duration;
 			countDown2 = green_duration;
+
+			set_led7seg_Road1(countDown1);
+			set_led7seg_Road2(countDown2);
 
 			status = RED_GREEN;
 		}
@@ -118,8 +127,13 @@ static void light_set2(color_t color) {
 }
 
 static void countdown() {
-	set_led7seg_Road1(countDown1);
-	set_led7seg_Road2(countDown2);
 	--countDown1;
 	--countDown2;
+	if (countDown1 != 0) {
+		set_led7seg_Road1(countDown1);
+	}
+
+	if (countDown2 != 0) {
+		set_led7seg_Road2(countDown2);
+	}
 }

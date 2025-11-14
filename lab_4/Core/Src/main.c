@@ -27,9 +27,7 @@
 #include "led7seg.h"
 #include "fsm_auto.h"
 #include "button.h"
-#include "next_mode.h"
 #include "fsm_config.h"
-#include "next_mode.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -102,9 +100,10 @@ int main(void)
 //  SCH_add(toggle_led, 2, 1000);
   SCH_add(led7seg_scan, 3, 10);
   SCH_add(button_scan, 0, 10);
-  SCH_add(fsm_auto, 5, 1000);
-  SCH_add(fsm_config, 0, 10);
-  SCH_add(next_mode, 0, 10);
+
+  SCH_add(fsm_auto, 5, 10);
+//  SCH_add(fsm_config, 0, 10);
+//  SCH_add(next_mode, 0, 10);
   /* USER CODE END 2 */
 
   /* Infinite loop */

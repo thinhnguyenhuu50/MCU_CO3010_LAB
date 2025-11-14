@@ -18,6 +18,9 @@ uint8_t green_duration 	= DEFAULT_GREEN_TIME;
 uint8_t amber_duration 	= DEFAULT_AMBER_TIME;
 uint8_t red_duration 	= DEFAULT_RED_TIME;
 
+int8_t task_ID_countdown = -1;
+// Functions
+
 void light_disable() {
 	HAL_GPIO_WritePin(GREEN1_GPIO_Port, GREEN1_Pin, 1);
 	HAL_GPIO_WritePin(AMBER1_GPIO_Port, AMBER1_Pin, 1);
