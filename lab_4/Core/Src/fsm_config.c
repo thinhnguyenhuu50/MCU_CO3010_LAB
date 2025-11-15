@@ -33,14 +33,14 @@ void fsm_config() {
 		set_led7seg_Road2(2);
 
 		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
-			light_disable();
-
 			SCH_delete(task_ID_red);
 			task_ID_red = -1;
 
-			amber_input = amber_duration;
+			light_disable();
 
+			amber_input = amber_duration;
 			countUp = 1;
+
 			status = SET_AMBER;
 		}
 		break;
@@ -49,22 +49,51 @@ void fsm_config() {
 			task_ID_amber = SCH_add(blink_amber, 0, 500);
 		}
 
+		button_process(&amber_input);
+
+		// Display value and mode number
+		set_led7seg_Road1(countUp);
+		set_led7seg_Road2(3);
+
 		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
-			light_disable();
 			SCH_delete(task_ID_amber);
 			task_ID_amber = -1;
+
+			light_disable();
+
+			green_input = green_duration;
+			countUp = 1;
+
 			status = SET_GREEN;
 		}
+
 		break;
 	case SET_GREEN:
 		if (task_ID_green == -1) {
 			task_ID_green = SCH_add(blink_green, 0, 500);
 		}
 
+		button_process(&green_input);
+
+		// Display value and mode number
+		set_led7seg_Road1(countUp);
+		set_led7seg_Road2(4);
+
 		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
-			light_disable();
 			SCH_delete(task_ID_green);
 			task_ID_green = -1;
+
+			light_disable();
+
+			countDown1 = red_duration;
+			countDown2 = green_duration;
+
+			if (red_input == green_input + amber_input) {
+				red_duration = red_input;
+				amber_duration = amber_input;
+				green_duration = green_input;
+			}
+
 			status = INIT;
 		}
 	default:

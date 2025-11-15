@@ -25,6 +25,9 @@ extern uint8_t green_input;
 extern uint8_t amber_input;
 extern uint8_t red_input;
 
+extern uint8_t countDown1;
+extern uint8_t countDown2;
+
 void light_disable();
 
 void set_led7seg_Road1(uint8_t number);

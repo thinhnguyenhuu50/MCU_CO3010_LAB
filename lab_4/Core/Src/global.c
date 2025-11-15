@@ -24,6 +24,9 @@ uint8_t green_input = 1;
 uint8_t amber_input = 1;
 uint8_t red_input = 1;
 
+uint8_t countDown1 = 9;
+uint8_t countDown2 = 9;
+
 // Functions
 
 void light_disable() {

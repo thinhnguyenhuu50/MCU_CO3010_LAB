@@ -15,9 +15,6 @@
 
 static uint8_t map_of_led_state[3] = {0x01, 0x02, 0x04};
 
-static uint8_t countDown1 = 9;
-static uint8_t countDown2 = 9;
-
 static int8_t task_ID_countdown = -1;
 
 // Forward declaration
