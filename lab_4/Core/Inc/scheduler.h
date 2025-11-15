@@ -22,10 +22,12 @@ typedef struct {
 	uint32_t			taskID;
 } sTasks;
 
+extern sTasks SCH_tasks_G[SCH_MAX_TASKS];
+
 void SCH_init(void);
 uint8_t SCH_add(void (*pFunction)(), unsigned int DELAY, unsigned int PERIOD);
 void SCH_update(void);
 void SCH_dispatch(void);
-unsigned char SCH_delete(const uint8_t index);
+void SCH_delete(void (*pFunction) (void));
 
 #endif /* INC_SCHEDULER_H_ */

@@ -27,7 +27,7 @@
 #include "led7seg.h"
 #include "button.h"
 #include "fsm_auto.h"
-#include "fsm_config.h"
+//#include "fsm_config.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -102,7 +102,7 @@ int main(void)
   SCH_add(button_scan, 5, 10);
 
   SCH_add(fsm_auto, 7, 10);
-  SCH_add(fsm_config, 9, 10);
+//  SCH_add(fsm_config, 9, 10);
   /* USER CODE END 2 */
 
   /* Infinite loop */

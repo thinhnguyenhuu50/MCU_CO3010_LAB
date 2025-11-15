@@ -71,7 +71,7 @@ void SCH_dispatch(void)
 
             if (SCH_tasks_G[Index].period == 0)
             {
-                SCH_delete(Index);
+                SCH_delete(SCH_tasks_G[Index].pTask);
             }
         }
     }
@@ -80,26 +80,15 @@ void SCH_dispatch(void)
 //    SCH_Go_To_Sleep();
 }
 
-unsigned char SCH_delete(const uint8_t TASK_INDEX)
-{
-    unsigned char Return_code = 0;
-
-    if (SCH_tasks_G[TASK_INDEX].pTask == 0)
-    {
-//        Error_code_G = ERROR_SCH_CANNOT_DELETE_TASK;
-//        Return_code = RETURN_ERROR;
-    }
-    else
-    {
-//        Return_code = RETURN_NORMAL;
-    }
-
-    SCH_tasks_G[TASK_INDEX].pTask  = 0x0000;
-    SCH_tasks_G[TASK_INDEX].delay  = 0;
-    SCH_tasks_G[TASK_INDEX].period = 0;
-    SCH_tasks_G[TASK_INDEX].runMe  = 0;
-
-    return Return_code;
+void SCH_delete(void (*pFunction) (void)) {
+	for (int i = 0; i < SCH_MAX_TASKS; ++i) {
+		if (SCH_tasks_G[i].pTask == pFunction) {
+			SCH_tasks_G[i].pTask  = 0x0000;
+			SCH_tasks_G[i].delay  = 0;
+			SCH_tasks_G[i].period = 0;
+			SCH_tasks_G[i].runMe  = 0;
+		}
+	}
 }
 
 
