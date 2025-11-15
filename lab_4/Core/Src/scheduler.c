@@ -48,7 +48,7 @@ void SCH_add(void (*pFunction)(), unsigned int DELAY, unsigned int PERIOD) {
 		}
 	}
 
-	while (idx < SCH_size && remaining > SCH_tasks_G[idx].delay) {
+	while (idx < SCH_size && SCH_tasks_G[idx].pTask != 0 && remaining > SCH_tasks_G[idx].delay) {
 		remaining -= SCH_tasks_G[idx].delay;
 		++idx;
 	}
@@ -99,9 +99,29 @@ void SCH_dispatch(void) {
 			SCH_delete_head();
 		}
 	}
-
+	__WFI();
 	//    SCH_Report_Status();
 	//    SCH_Go_To_Sleep();
+}
+
+static void SCH_delete_head(void) {
+	if (SCH_size == 0) return;
+
+	if (SCH_size == 1) {
+		SCH_tasks_G[0].pTask = 0;
+		SCH_tasks_G[0].delay = 0;
+		SCH_tasks_G[0].period = 0;
+
+		--SCH_size;
+
+		return;
+	}
+
+	for (uint8_t i = 0; i < SCH_size - 1; ++i) {
+		SCH_tasks_G[i] = SCH_tasks_G[i + 1];
+	}
+
+	--SCH_size;
 }
 
 void SCH_delete(void (*pFunction) (void)) {
@@ -122,16 +142,6 @@ void SCH_delete(void (*pFunction) (void)) {
 	}
 
 	for (uint8_t i = idx; i < SCH_size - 1; ++i) {
-		SCH_tasks_G[i] = SCH_tasks_G[i + 1];
-	}
-
-	--SCH_size;
-}
-
-static void SCH_delete_head(void) {
-	if (SCH_size == 0) return;
-
-	for (uint8_t i = 0; i < SCH_size - 1; ++i) {
 		SCH_tasks_G[i] = SCH_tasks_G[i + 1];
 	}
 

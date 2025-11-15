@@ -97,7 +97,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   system_init();
   HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, 1);
-//  SCH_add(toggle_led, 2, 500);
+  SCH_add(toggle_led, 500, 500);
   SCH_add(led7seg_scan, 3, 10);
   SCH_add(button_scan, 5, 10);
 
