@@ -15,13 +15,13 @@
 
 static uint8_t map_of_led_state[3] = {0x01, 0x02, 0x04};
 
-static int8_t task_ID_countdown = -1;
-
 // Forward declaration
 static void countdown();
 
 static void light_set1(color_t color);
 static void light_set2(color_t color);
+
+static void next_mode();
 
 void fsm_auto() {
 	switch (status) {
@@ -34,9 +34,7 @@ void fsm_auto() {
 		set_led7seg_Road1(countDown1);
 		set_led7seg_Road2(countDown2);
 
-		if (task_ID_countdown == -1) {
-			task_ID_countdown = SCH_add(countdown, 1000, 1000);
-		}
+		SCH_add(countdown, 1000, 1000);
 
 		status = RED_GREEN;
 		break;
@@ -52,17 +50,7 @@ void fsm_auto() {
 			status = RED_AMBER;
 		}
 
-		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
-			SCH_delete(task_ID_countdown);
-			task_ID_countdown = -1;
-
-			light_disable();
-
-			red_input = red_duration;
-			countUp = 1;
-
-			status = SET_RED;
-		}
+		next_mode();
 		break;
 
 	case RED_AMBER:
@@ -79,17 +67,7 @@ void fsm_auto() {
 			status = GREEN_RED;
 		}
 
-		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
-			SCH_delete(task_ID_countdown);
-			task_ID_countdown = -1;
-
-			light_disable();
-
-			red_input = red_duration;
-			countUp = 1;
-
-			status = SET_RED;
-		}
+		next_mode();
 		break;
 
 	case GREEN_RED:
@@ -104,17 +82,7 @@ void fsm_auto() {
 			status = AMBER_RED;
 		}
 
-		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
-			SCH_delete(task_ID_countdown);
-			task_ID_countdown = -1;
-
-			light_disable();
-
-			red_input = red_duration;
-			countUp = 1;
-
-			status = SET_RED;
-		}
+		next_mode();
 		break;
 
 	case AMBER_RED:
@@ -131,17 +99,7 @@ void fsm_auto() {
 			status = RED_GREEN;
 		}
 
-		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
-			SCH_delete(task_ID_countdown);
-			task_ID_countdown = -1;
-
-			light_disable();
-
-			red_input = red_duration;
-			countUp = 1;
-
-			status = SET_RED;
-		}
+		next_mode();
 		break;
 
 	default:
@@ -171,5 +129,18 @@ static void countdown() {
 
 	if (countDown2 != 0) {
 		set_led7seg_Road2(countDown2);
+	}
+}
+
+static void next_mode() {
+	if (button_is_pressed(BUTTON_SELLECT_MODE)) {
+		SCH_delete(countdown);
+
+		light_disable();
+
+		red_input = red_duration;
+		countUp = 1;
+
+		status = SET_RED;
 	}
 }
