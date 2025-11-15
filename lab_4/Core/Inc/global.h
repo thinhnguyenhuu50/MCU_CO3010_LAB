@@ -20,6 +20,14 @@ extern uint8_t green_duration;
 extern uint8_t amber_duration;
 extern uint8_t red_duration;
 
+extern uint8_t countUp;
+extern uint8_t green_input;
+extern uint8_t amber_input;
+extern uint8_t red_input;
+
 void light_disable();
+
+void set_led7seg_Road1(uint8_t number);
+void set_led7seg_Road2(uint8_t number);
 
 #endif /* INC_GLOBAL_H_ */

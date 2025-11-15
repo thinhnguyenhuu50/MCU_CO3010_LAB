@@ -38,6 +38,10 @@ uint8_t button_is_held(uint8_t index, int duration) {
 	return 0;
 }
 
+uint8_t button_is_released(uint8_t index) {
+	return button_count[index] == 0;
+}
+
 void button_scan() {
 	for (int i = 0; i < NUMBER_OF_BUTTONS; ++i) {
 		debounce[i].first_state = debounce[i].second_state;

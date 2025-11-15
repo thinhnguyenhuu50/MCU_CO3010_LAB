@@ -11,12 +11,13 @@
 #include "scheduler.h"
 #include "button.h"
 
-static int8_t task_ID_red = -1, task_ID_amber = -1, task_ID_green = -1;
+static int8_t task_ID_red = -1, task_ID_amber = -1, task_ID_green = -1, task_ID_increase = -1;
 
 // Forward declaration
 static void blink_red();
 static void blink_amber();
 static void blink_green();
+static void button_process(uint8_t *input);
 
 void fsm_config() {
 	switch (status) {
@@ -25,10 +26,21 @@ void fsm_config() {
 			task_ID_red = SCH_add(blink_red, 0, 500);
 		}
 
+		button_process(&red_input);
+
+		// Display value and mode number
+		set_led7seg_Road1(countUp);
+		set_led7seg_Road2(2);
+
 		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
 			light_disable();
+
 			SCH_delete(task_ID_red);
 			task_ID_red = -1;
+
+			amber_input = amber_duration;
+
+			countUp = 1;
 			status = SET_AMBER;
 		}
 		break;
@@ -73,4 +85,32 @@ static void blink_amber() {
 static void blink_green() {
 	HAL_GPIO_TogglePin(GREEN1_GPIO_Port, GREEN1_Pin);
 	HAL_GPIO_TogglePin(GREEN2_GPIO_Port, GREEN2_Pin);
+}
+
+static void increase() {
+	++countUp;
+	if (countUp == 100) {
+		countUp = 1;
+	}
+}
+
+static void button_process(uint8_t *input) {
+	if (button_is_pressed(BUTTON_INCREASE)) {
+		SCH_add(increase, 0, 0);
+	}
+
+	if (button_is_held(BUTTON_INCREASE, 250)) {
+		if (task_ID_increase == -1) {
+			task_ID_increase = SCH_add(increase, 0, 500);
+		}
+	}
+
+	if (button_is_released(BUTTON_INCREASE)) {
+		SCH_delete(task_ID_increase);
+		task_ID_increase = -1;
+	}
+
+	if (button_is_pressed(BUTTON_SET)) {
+		*input = countUp;
+	}
 }

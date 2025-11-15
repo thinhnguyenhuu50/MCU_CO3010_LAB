@@ -21,21 +21,12 @@ static uint8_t countDown2 = 9;
 static int8_t task_ID_countdown = -1;
 
 // Forward declaration
-static void set_led7seg_Road1(uint8_t number);
-static void set_led7seg_Road2(uint8_t number);
 static void countdown();
 
 static void light_set1(color_t color);
 static void light_set2(color_t color);
 
 void fsm_auto() {
-	if (button_is_pressed(BUTTON_SELLECT_MODE)) {
-		SCH_delete(task_ID_countdown);
-		task_ID_countdown = -1;
-		light_disable();
-		status = SET_RED;
-	}
-
 	switch (status) {
 	case INIT:
 		light_disable();
@@ -64,6 +55,17 @@ void fsm_auto() {
 			status = RED_AMBER;
 		}
 
+		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
+			SCH_delete(task_ID_countdown);
+			task_ID_countdown = -1;
+
+			light_disable();
+
+			red_input = red_duration;
+			countUp = 1;
+
+			status = SET_RED;
+		}
 		break;
 
 	case RED_AMBER:
@@ -79,6 +81,18 @@ void fsm_auto() {
 
 			status = GREEN_RED;
 		}
+
+		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
+			SCH_delete(task_ID_countdown);
+			task_ID_countdown = -1;
+
+			light_disable();
+
+			red_input = red_duration;
+			countUp = 1;
+
+			status = SET_RED;
+		}
 		break;
 
 	case GREEN_RED:
@@ -91,6 +105,18 @@ void fsm_auto() {
 			set_led7seg_Road1(countDown1);
 
 			status = AMBER_RED;
+		}
+
+		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
+			SCH_delete(task_ID_countdown);
+			task_ID_countdown = -1;
+
+			light_disable();
+
+			red_input = red_duration;
+			countUp = 1;
+
+			status = SET_RED;
 		}
 		break;
 
@@ -107,6 +133,18 @@ void fsm_auto() {
 
 			status = RED_GREEN;
 		}
+
+		if (button_is_pressed(BUTTON_SELLECT_MODE)) {
+			SCH_delete(task_ID_countdown);
+			task_ID_countdown = -1;
+
+			light_disable();
+
+			red_input = red_duration;
+			countUp = 1;
+
+			status = SET_RED;
+		}
 		break;
 
 	default:
@@ -115,16 +153,6 @@ void fsm_auto() {
 }
 
 // Supported functions
-static void set_led7seg_Road1(uint8_t number){
-	led7seg_set(0, number/10);
-	led7seg_set(1, number%10);
-}
-
-static void set_led7seg_Road2(uint8_t number){
-	led7seg_set(2, number/10);
-	led7seg_set(3, number%10);
-}
-
 static void light_set1(color_t color) {
 	HAL_GPIO_WritePin(GREEN1_GPIO_Port, GREEN1_Pin, !(map_of_led_state[color] & (1<<0)));
 	HAL_GPIO_WritePin(AMBER1_GPIO_Port, AMBER1_Pin, !(map_of_led_state[color] & (1<<1)));

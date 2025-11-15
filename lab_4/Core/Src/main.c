@@ -99,10 +99,10 @@ int main(void)
   HAL_GPIO_WritePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin, 1);
 //  SCH_add(toggle_led, 2, 1000);
   SCH_add(led7seg_scan, 3, 10);
-  SCH_add(button_scan, 0, 10);
+  SCH_add(button_scan, 5, 10);
 
-  SCH_add(fsm_auto, 5, 10);
-  SCH_add(fsm_config, 0, 10);
+  SCH_add(fsm_auto, 7, 10);
+  SCH_add(fsm_config, 9, 10);
   /* USER CODE END 2 */
 
   /* Infinite loop */
