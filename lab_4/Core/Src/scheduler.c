@@ -9,93 +9,134 @@
 #include "tim.h"
 #include "stdint.h"
 
-sTasks SCH_tasks_G[SCH_MAX_TASKS];
+typedef struct {
+	void 					(*pTask) (void);
+	uint32_t 			delay;
+	uint32_t 			period;
+	uint8_t 			runMe;
+} sTasks;
+static sTasks SCH_tasks_G[SCH_MAX_TASKS];
+static uint8_t SCH_size = 0;
+
+// Forward declaration
+static void SCH_delete_head(void);
 
 void SCH_init(void) {
 	HAL_TIM_Base_Start_IT(&htim2);
-}
 
-uint8_t SCH_add(void (*pFunction)(), unsigned int DELAY, unsigned int PERIOD) {
-	unsigned char Index = 0;
-
+	SCH_size = 0;
 	for (int i = 0; i < SCH_MAX_TASKS; ++i) {
+		SCH_tasks_G[i].pTask  = 0;
+		SCH_tasks_G[i].delay  = 0;
+		SCH_tasks_G[i].period = 0;
+		SCH_tasks_G[i].runMe  = 0;
+	}
+}
+
+void SCH_add(void (*pFunction)(), unsigned int DELAY, unsigned int PERIOD) {
+	if (SCH_size >= SCH_MAX_TASKS) {
+		return;  // queue full
+	}
+
+	uint32_t remaining = DELAY/TICK;   // remaining delay for new task
+	uint32_t p = PERIOD/TICK;
+	uint8_t  idx = 0;
+
+	for (int i = 0; i < SCH_size; ++i) {
 		if (SCH_tasks_G[i].pTask == pFunction) {
-			return 0;
-		}
-
-		if (SCH_tasks_G[i].pTask == 0 && Index == 0) {
-			Index = i;
+			return;
 		}
 	}
 
-	if (Index == SCH_MAX_TASKS)
-	{
-		//        Error_code_G = ERROR_SCH_TOO_MANY_TASKS;
-		return SCH_MAX_TASKS;
+	while (idx < SCH_size && remaining > SCH_tasks_G[idx].delay) {
+		remaining -= SCH_tasks_G[idx].delay;
+		++idx;
 	}
 
-	SCH_tasks_G[Index].pTask  = pFunction;
-	SCH_tasks_G[Index].delay  = DELAY/TICK;
-	SCH_tasks_G[Index].period = PERIOD/TICK;
-	SCH_tasks_G[Index].runMe  = 0;
+	for (int j = SCH_size; j > idx; --j) {
+		SCH_tasks_G[j] = SCH_tasks_G[j - 1];
+	}
 
-	return Index;
+	SCH_tasks_G[idx].pTask  = pFunction;
+	SCH_tasks_G[idx].delay  = remaining;
+	SCH_tasks_G[idx].period = p;
+	SCH_tasks_G[idx].runMe  = 0;
+
+	if (idx + 1 < SCH_size + 1) {
+		SCH_tasks_G[idx + 1].delay -= remaining;
+	}
+
+	++SCH_size;
 }
 
-void SCH_update(void)
-{
-    unsigned char Index;
+void SCH_update(void) {
+	if (SCH_size == 0) {
+		return; // no task
+	}
 
-    for (Index = 0; Index < SCH_MAX_TASKS; Index++) {
-        if (SCH_tasks_G[Index].pTask) {
-            if (SCH_tasks_G[Index].delay == 0) {
-                SCH_tasks_G[Index].runMe += 1;
+	if (SCH_tasks_G[0].delay > 0) {
+		--SCH_tasks_G[0].delay;
+	}
 
-                if (SCH_tasks_G[Index].period) {
-                    SCH_tasks_G[Index].delay = SCH_tasks_G[Index].period;
-                }
-            }
-            else {
-                SCH_tasks_G[Index].delay -= 1;
-            }
-        }
-    }
+	if (SCH_tasks_G[0].delay == 0) {
+		++SCH_tasks_G[0].runMe;
+	}
 }
 
+void SCH_dispatch(void) {
+	// Run all tasks whose delay has reached 0
+	while (SCH_size > 0 && SCH_tasks_G[0].runMe > 0 && SCH_tasks_G[0].pTask != 0) {
+		(*SCH_tasks_G[0].pTask)();
+		--SCH_tasks_G[0].runMe;
 
-void SCH_dispatch(void)
-{
-    unsigned char Index;
+		if (SCH_tasks_G[0].period > 0) {
+			void (*f)(void) = SCH_tasks_G[0].pTask;
+			uint32_t p = SCH_tasks_G[0].period;
 
-    for (Index = 0; Index < SCH_MAX_TASKS; Index++)
-    {
-        if (SCH_tasks_G[Index].runMe > 0)
-        {
-            (*SCH_tasks_G[Index].pTask)();
-            SCH_tasks_G[Index].runMe -= 1;
+			SCH_delete_head();                // remove old instance
+			SCH_add(f, p*TICK, p*TICK);        // reinsert with its period as new delay
+		} else {
+			SCH_delete_head();
+		}
+	}
 
-            if (SCH_tasks_G[Index].period == 0)
-            {
-                SCH_delete(SCH_tasks_G[Index].pTask);
-            }
-        }
-    }
-
-//    SCH_Report_Status();
-//    SCH_Go_To_Sleep();
+	//    SCH_Report_Status();
+	//    SCH_Go_To_Sleep();
 }
 
 void SCH_delete(void (*pFunction) (void)) {
-	for (int i = 0; i < SCH_MAX_TASKS; ++i) {
-		if (SCH_tasks_G[i].pTask == pFunction) {
-			SCH_tasks_G[i].pTask  = 0x0000;
-			SCH_tasks_G[i].delay  = 0;
-			SCH_tasks_G[i].period = 0;
-			SCH_tasks_G[i].runMe  = 0;
-		}
+	if (SCH_size == 0) return;
+
+	uint8_t idx = 0;
+
+	while (idx < SCH_size && SCH_tasks_G[idx].pTask != pFunction) {
+		++idx;
 	}
+
+	if (idx == SCH_size) {
+		return;
+	}
+
+	if (idx + 1 < SCH_size) {
+		SCH_tasks_G[idx + 1].delay += SCH_tasks_G[idx].delay;
+	}
+
+	for (uint8_t i = idx; i < SCH_size - 1; ++i) {
+		SCH_tasks_G[i] = SCH_tasks_G[i + 1];
+	}
+
+	--SCH_size;
 }
 
+static void SCH_delete_head(void) {
+	if (SCH_size == 0) return;
+
+	for (uint8_t i = 0; i < SCH_size - 1; ++i) {
+		SCH_tasks_G[i] = SCH_tasks_G[i + 1];
+	}
+
+	--SCH_size;
+}
 
 void HAL_TIM_PeriodElapsedCallback (TIM_HandleTypeDef *htim ) {
 	SCH_update();
