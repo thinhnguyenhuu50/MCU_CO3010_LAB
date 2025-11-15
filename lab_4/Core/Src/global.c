@@ -47,3 +47,18 @@ void set_led7seg_Road2(uint8_t number){
 	led7seg_set(2, number/10);
 	led7seg_set(3, number%10);
 }
+
+void blink_red() {
+	HAL_GPIO_TogglePin(RED1_GPIO_Port, RED1_Pin);
+	HAL_GPIO_TogglePin(RED2_GPIO_Port, RED2_Pin);
+}
+
+void blink_amber() {
+	HAL_GPIO_TogglePin(AMBER1_GPIO_Port, AMBER1_Pin);
+	HAL_GPIO_TogglePin(AMBER2_GPIO_Port, AMBER2_Pin);
+}
+
+void blink_green() {
+	HAL_GPIO_TogglePin(GREEN1_GPIO_Port, GREEN1_Pin);
+	HAL_GPIO_TogglePin(GREEN2_GPIO_Port, GREEN2_Pin);
+}

@@ -33,4 +33,7 @@ void light_disable();
 void set_led7seg_Road1(uint8_t number);
 void set_led7seg_Road2(uint8_t number);
 
+void blink_red();
+void blink_amber();
+void blink_green();
 #endif /* INC_GLOBAL_H_ */

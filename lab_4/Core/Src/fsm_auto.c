@@ -135,6 +135,7 @@ static void countdown() {
 static void next_mode() {
 	if (button_is_pressed(BUTTON_SELLECT_MODE)) {
 		SCH_delete(countdown);
+		SCH_add(blink_red, 0, 500);
 
 		light_disable();
 

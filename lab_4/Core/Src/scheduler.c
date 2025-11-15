@@ -18,9 +18,14 @@ void SCH_init(void) {
 uint8_t SCH_add(void (*pFunction)(), unsigned int DELAY, unsigned int PERIOD) {
 	unsigned char Index = 0;
 
-	while ((SCH_tasks_G[Index].pTask != 0) && (Index < SCH_MAX_TASKS))
-	{
-		Index++;
+	for (int i = 0; i < SCH_MAX_TASKS; ++i) {
+		if (SCH_tasks_G[i].pTask == pFunction) {
+			return 0;
+		}
+
+		if (SCH_tasks_G[i].pTask == 0 && Index == 0) {
+			Index = i;
+		}
 	}
 
 	if (Index == SCH_MAX_TASKS)
