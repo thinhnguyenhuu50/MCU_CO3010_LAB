@@ -160,7 +160,8 @@ void uart_communiation_fsm(void) {
 					adc_value = HAL_ADC_GetValue(&hadc1);
 
 					/* Format and send packet: !ADC=xxxx# */
-					int len = sprintf(uart_tx_buffer, ADC_RETURN, (unsigned long) adc_value);
+					int len = sprintf(uart_tx_buffer, ADC_RETURN,
+							(unsigned long) adc_value);
 					HAL_UART_Transmit(&huart2, (uint8_t*) uart_tx_buffer, len, 1000);
 
 					/* Start 3 s software timer and wait for OK */
@@ -184,7 +185,8 @@ void uart_communiation_fsm(void) {
 					command_flag = 0;
 
 					adc_value = HAL_ADC_GetValue(&hadc1);
-					int len = sprintf(uart_tx_buffer, ADC_RETURN, (unsigned long) adc_value);
+					int len = sprintf(uart_tx_buffer, ADC_RETURN,
+							(unsigned long) adc_value);
 					HAL_UART_Transmit(&huart2, (uint8_t*) uart_tx_buffer, len, 1000);
 
 					/* Restart 3 s timer */
@@ -195,14 +197,19 @@ void uart_communiation_fsm(void) {
 			} else {
 				/* No new command, check software timer timeout */
 				if (timer_is_expired(UART_TIMER_INDEX)) {
-					/* Re-send the SAME adc_value (as required) */
-					int len = sprintf(uart_tx_buffer, ADC_RETURN, (unsigned long) adc_value);
-					HAL_UART_Transmit(&huart2, (uint8_t*) uart_tx_buffer, len, 1000);
-
-					/* Start waiting again for another 3 s */
-					timer_set(UART_TIMER_INDEX, UART_TIMEOUT_MS);
+					uart_state = UART_RESEND;
 				}
 			}
+			break;
+		case UART_RESEND:
+			/* Re-send the SAME adc_value */
+			int len = sprintf(uart_tx_buffer, ADC_RETURN, (unsigned long) adc_value);
+			HAL_UART_Transmit(&huart2, (uint8_t*) uart_tx_buffer, len, 1000);
+
+			/* Start waiting again for another 3 s */
+			timer_set(UART_TIMER_INDEX, UART_TIMEOUT_MS);
+
+			uart_state = UART_WAIT_OK;
 			break;
 
 		default:
