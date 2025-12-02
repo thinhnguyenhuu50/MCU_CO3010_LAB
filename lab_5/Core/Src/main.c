@@ -28,6 +28,7 @@
 #include "stdio.h"
 #include "string.h"
 #include "software_timer.h"
+#include "fsm.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,7 +60,6 @@ void system_init();
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint8_t temp = 0;
 /* USER CODE END 0 */
 
 /**
@@ -95,7 +95,6 @@ int main(void) {
 	MX_TIM2_Init();
 	/* USER CODE BEGIN 2 */
 	system_init();
-//	uint32_t ADC_value = 0;
 	timer_set(0, 500);
 	/* USER CODE END 2 */
 
@@ -105,16 +104,6 @@ int main(void) {
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
-//		HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
-//
-//		if (HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK) { // 100ms timeout
-//			ADC_value = HAL_ADC_GetValue(&hadc1);
-//		}
-//
-//		char str[20];
-//		sprintf(str, "%lu\r\n", ADC_value);
-//		uint16_t data_size = strlen(str);
-//		HAL_UART_Transmit(&huart2, (uint8_t*) str, data_size, 1000);
 		if (timer_flag) {
 			timer_flag = 0;
 			timer_run();
@@ -124,10 +113,10 @@ int main(void) {
 		}
 
 		if (buffer_flag == 1) {
-			fsm_command_parser();
+			command_parser_fsm();
 			buffer_flag = 0;
 		}
-		fsm_uart_communication();
+		uart_communiation_fsm();
 	}
 	/* USER CODE END 3 */
 }
@@ -173,6 +162,7 @@ void SystemClock_Config(void) {
 
 /* USER CODE BEGIN 4 */
 void system_init() {
+	uart_init();
 	HAL_ADC_Start(&hadc1);
 	timer_init();
 }
