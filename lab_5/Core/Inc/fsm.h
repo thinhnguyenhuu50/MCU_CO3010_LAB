@@ -10,8 +10,8 @@
 
 #include "stdint.h"
 
-#define UART_TIMER_INDEX   0     // use a dedicated timer slot
-#define UART_TIMEOUT_MS    3000  // 3 seconds
+#define UART_TIMER_INDEX   1
+#define UART_TIMEOUT_MS    3000
 
 extern uint8_t buffer_flag;
 

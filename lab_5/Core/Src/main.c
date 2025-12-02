@@ -108,15 +108,19 @@ int main(void) {
 			timer_flag = 0;
 			timer_run();
 		}
+
 		if (timer_is_expired(0)) {
 			HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
+			timer_set(0, 500);
 		}
 
 		if (buffer_flag == 1) {
 			command_parser_fsm();
 			buffer_flag = 0;
 		}
+
 		uart_communiation_fsm();
+		__WFI();
 	}
 	/* USER CODE END 3 */
 }

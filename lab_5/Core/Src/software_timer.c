@@ -12,10 +12,11 @@
 
 uint8_t timer_flag = 0;
 
-struct TimerStruct {
-	uint8_t counter;
-	uint8_t flag;
-	uint8_t origin;
+struct TimerStruct
+{
+	int counter;
+	int flag;
+	int origin;
 };
 
 static struct TimerStruct timer[NUMBER_OF_TIMERS];
@@ -23,18 +24,15 @@ static struct TimerStruct timer[NUMBER_OF_TIMERS];
 /* Function */
 void timer_init() {
 	HAL_TIM_Base_Start_IT(&htim2);
-	for (int i = 0; i < NUMBER_OF_TIMERS; ++i) {
-		timer[i].counter = 0;
-	}
 }
 
-void timer_set(int index, int duration) {
+void timer_set(int index, int duration){
 	timer[index].origin = duration / TIMER_PERIOD;
 	timer[index].counter = duration / TIMER_PERIOD;
 	timer[index].flag = 0;
 }
 
-void timer_run() {
+void timer_run(){
 	for (int i = 0; i < NUMBER_OF_TIMERS; ++i) {
 		if (timer[i].counter > 0) {
 			--timer[i].counter;
@@ -47,7 +45,7 @@ void timer_run() {
 
 int timer_is_expired(int index) {
 	if (timer[index].flag) {
-		timer[index].counter = timer[index].origin;
+//		timer[index].counter = timer[index].origin;
 		timer[index].flag = 0;
 		return 1;
 	}

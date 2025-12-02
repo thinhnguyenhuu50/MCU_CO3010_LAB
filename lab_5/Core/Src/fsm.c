@@ -16,23 +16,24 @@
 #define CMD_NONE   0
 #define CMD_RST    1
 #define CMD_OK     2
+#define ADC_RETURN "\r\n!ADC=%lu#\r\n"
 
-uint8_t temp = 0;
-uint8_t buffer[MAX_BUFFER_SIZE];
-uint8_t index_buffer = 0;
+static uint8_t temp = 0;
+static uint8_t buffer[MAX_BUFFER_SIZE];
+static uint8_t index_buffer = 0;
 uint8_t buffer_flag = 0;
 
-uint8_t command_flag = 0;
-uint8_t command_data = CMD_NONE;
+static uint8_t command_flag = 0;
+static uint8_t command_data = CMD_NONE;
 
 typedef enum {
-	UART_IDLE = 0, UART_WAIT_OK
+	UART_IDLE = 0, UART_WAIT_OK, UART_RESEND
 } UART_State_t;
 
-UART_State_t uart_state = UART_IDLE;
+static UART_State_t uart_state = UART_IDLE;
 
-uint32_t adc_value = 0;
-char uart_tx_buffer[32];
+static uint32_t adc_value = 0;
+static char uart_tx_buffer[32];
 
 /* States for the command parser */
 typedef enum {
@@ -135,7 +136,7 @@ void command_parser_fsm(void) {
 				pending_cmd = CMD_NONE;
 				state = CMD_WAIT_START;
 			} else if (c == '!') {
-				// maybe start of a new command
+				// start of a new command
 				state = CMD_WAIT_CMD1;
 			} else {
 				state = CMD_WAIT_START;
@@ -159,8 +160,7 @@ void uart_communiation_fsm(void) {
 					adc_value = HAL_ADC_GetValue(&hadc1);
 
 					/* Format and send packet: !ADC=xxxx# */
-					int len = sprintf(uart_tx_buffer, "!ADC=%lu#\r\n",
-							(unsigned long) adc_value);
+					int len = sprintf(uart_tx_buffer, ADC_RETURN, (unsigned long) adc_value);
 					HAL_UART_Transmit(&huart2, (uint8_t*) uart_tx_buffer, len, 1000);
 
 					/* Start 3 s software timer and wait for OK */
@@ -184,8 +184,7 @@ void uart_communiation_fsm(void) {
 					command_flag = 0;
 
 					adc_value = HAL_ADC_GetValue(&hadc1);
-					int len = sprintf(uart_tx_buffer, "!ADC=%lu#\r\n",
-							(unsigned long) adc_value);
+					int len = sprintf(uart_tx_buffer, ADC_RETURN, (unsigned long) adc_value);
 					HAL_UART_Transmit(&huart2, (uint8_t*) uart_tx_buffer, len, 1000);
 
 					/* Restart 3 s timer */
@@ -197,8 +196,7 @@ void uart_communiation_fsm(void) {
 				/* No new command, check software timer timeout */
 				if (timer_is_expired(UART_TIMER_INDEX)) {
 					/* Re-send the SAME adc_value (as required) */
-					int len = sprintf(uart_tx_buffer, "!ADC=%lu#\r\n",
-							(unsigned long) adc_value);
+					int len = sprintf(uart_tx_buffer, ADC_RETURN, (unsigned long) adc_value);
 					HAL_UART_Transmit(&huart2, (uint8_t*) uart_tx_buffer, len, 1000);
 
 					/* Start waiting again for another 3 s */
