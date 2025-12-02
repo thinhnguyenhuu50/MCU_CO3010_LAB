@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -26,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
 #include "string.h"
+#include "software_timer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,13 +60,6 @@ void system_init();
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 uint8_t temp = 0;
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	if (huart->Instance == USART2) {
-		HAL_UART_Transmit(&huart2, &temp, 1, 50);
-		HAL_UART_Receive_IT(&huart2, &temp, 1);
-	}
-}
 /* USER CODE END 0 */
 
 /**
@@ -97,9 +92,11 @@ int main(void) {
 	MX_GPIO_Init();
 	MX_ADC1_Init();
 	MX_USART2_UART_Init();
+	MX_TIM2_Init();
 	/* USER CODE BEGIN 2 */
 	system_init();
-	uint32_t ADC_value = 0;
+//	uint32_t ADC_value = 0;
+	timer_set(0, 500);
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -108,18 +105,29 @@ int main(void) {
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
-		HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
-
-		if (HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK) { // 100ms timeout
-			ADC_value = HAL_ADC_GetValue(&hadc1);
+//		HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
+//
+//		if (HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK) { // 100ms timeout
+//			ADC_value = HAL_ADC_GetValue(&hadc1);
+//		}
+//
+//		char str[20];
+//		sprintf(str, "%lu\r\n", ADC_value);
+//		uint16_t data_size = strlen(str);
+//		HAL_UART_Transmit(&huart2, (uint8_t*) str, data_size, 1000);
+		if (timer_flag) {
+			timer_flag = 0;
+			timer_run();
+		}
+		if (timer_is_expired(0)) {
+			HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
 		}
 
-		char str[20];
-		sprintf(str, "%lu\r\n", ADC_value);
-		uint16_t data_size = strlen(str);
-		HAL_UART_Transmit(&huart2, (uint8_t*) str, data_size, 1000);
-
-		HAL_Delay(1000);
+		if (buffer_flag == 1) {
+			fsm_command_parser();
+			buffer_flag = 0;
+		}
+		fsm_uart_communication();
 	}
 	/* USER CODE END 3 */
 }
@@ -165,8 +173,8 @@ void SystemClock_Config(void) {
 
 /* USER CODE BEGIN 4 */
 void system_init() {
-	HAL_UART_Receive_IT(&huart2, &temp, 1);
 	HAL_ADC_Start(&hadc1);
+	timer_init();
 }
 /* USER CODE END 4 */
 
